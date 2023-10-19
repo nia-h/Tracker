@@ -3,84 +3,9 @@ import debounce from 'lodash/debounce';
 
 import Axios from 'axios';
 import { conservatively } from '@grammarly/focal/dist/_cjs/src/utils';
-const dbBaseURL = 'http://localhost:8081';
-const medsBase = 'https://clinicaltables.nlm.nih.gov';
-
-// function CreateEntry() {
-//   const [medArray, setMedname] = useState();
-
-//   async function handleLookup(value) {
-//     if (!value.trim()) {
-//       alert('You must provide a medication name!');
-//       return;
-//     } else {
-//       const medInfo = await Axios.get('meds-lookup', { medName: value });
-//       console.log('medInfo==>', medInfo);
-//     }
-//   }
-
-//   // async function handleSubmit(e) {
-//   //   e.preventDefault();
-//   //   try {
-//   //     const response = await Axios.get('/meds-lookup');
-
-//   //     setMedname(response);
-//   //     // Redirect to new post url
-//   //     appDispatch({
-//   //       type: 'flashMessage',
-//   //       value: 'Congrats, you created a new post.',
-//   //     });
-//   //     navigate(`/post/${response.data}`);
-//   //     console.log('New post was created.');
-//   //   } catch (e) {
-//   //     console.log('There was a problem.');
-//   //   }
-//   // }
-
-//   return (
-//     <>
-//       {/* <div>
-//         name: <span>${medName}</span>
-//       </div>
-//       <form onSubmit={handleSubmit}>
-//         <div className='form-group'>
-//           <label htmlFor='post-title' className='text-muted mb-1'>
-//             <small>Name of medication</small>
-//           </label> */}
-//       <input
-//         onChange={e => setMedname(e.target.value)}
-//         onBlur={e => handleLookup()}
-//         autoFocus
-//         name='med-name'
-//         id='med-name'
-//         className='form-control form-control-lg form-control-title'
-//         type='text'
-//         placeholder=''
-//         autoComplete='off'
-//       />
-//       {/* </div>
-
-//         <div className='form-group'>
-//           <label htmlFor='post-body' className='text-muted mb-1 d-block'>
-//             <small>Body Content</small>
-//           </label>
-//           <textarea
-//             onChange={e => setBody(e.target.value)}
-//             name='body'
-//             id='post-body'
-//             className='body-content tall-textarea form-control'
-//             type='text'></textarea>
-//         </div>
-
-//         <button className='btn btn-primary'>Save New Post</button>
-//       </form> */}
-//     </>
-//   );
-// }
-
-// export default createEntry;
-
-// import React, { useEffect } from 'react';
+const dbBaseURL = import.meta.env.VITE_dbBaseURL;
+const medsBaseURL = import.meta.env.VITE_medsBaseURL;
+//console.log('medsBaseULR==>', medsBaseURL);
 
 const CreateEntry = () => {
   const [medArray, setMedArray] = useState([]);
@@ -109,7 +34,8 @@ const CreateEntry = () => {
 
     try {
       const url =
-        medsBase + `/api/rxterms/v3/search?terms=${medName}&ef=STRENGTHS_AND_FORMS`;
+        medsBaseURL +
+        `/api/rxterms/v3/search?terms=${medName}&ef=STRENGTHS_AND_FORMS`;
       const { data } = await Axios.get(url);
       setMedArray(e => data[1]);
       //console.log('medArray==>', medArray);
