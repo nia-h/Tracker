@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import debounce from 'lodash/debounce';
 
 import Axios from 'axios';
-import { conservatively } from '@grammarly/focal/dist/_cjs/src/utils';
 const dbBaseURL = import.meta.env.VITE_dbBaseURL;
 const medsBaseURL = import.meta.env.VITE_medsBaseURL;
 //console.log('medsBaseULR==>', medsBaseURL);
@@ -61,6 +60,7 @@ const CreateEntry = () => {
     e.preventDefault();
     const slots = pickedTimes.slice(0, times);
     const entryInfo = {
+      userId: '6532765eac2b082245ef8514',
       medication: selected,
       slots,
     };

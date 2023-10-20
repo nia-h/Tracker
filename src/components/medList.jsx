@@ -1,22 +1,24 @@
 import React, { useEffect, useState, useContext } from 'react';
 import Axios from 'axios';
 import { useParams, Link } from 'react-router-dom';
-import LoadingDotsIcon from './LoadingDotsIcon';
-import StateContext from '../StateContext';
-import Post from './Post';
+// import LoadingDotsIcon from './LoadingDotsIcon';
+// import StateContext from '../StateContext';
+// import Post from './Post';
 
 function MedList(props) {
   // const appState = useContext(StateContext);
   const { email } = useParams();
   // const [isLoading, setIsLoading] = useState(true);
   const [meds, setMeds] = useState([]);
+  const dbBaseURL = import.meta.env.VITE_dbBaseURL;
 
   useEffect(() => {
     // const ourRequest = Axios.CancelToken.source();
 
     const fetchMeds = async () => {
       try {
-        const response = await Axios.get(`/${email}/meds`, {
+        // const response = await Axios.get(`/${email}/meds`, {
+        const response = await Axios.get(`${dbBaseURL}/barley@tea.com/medlist`, {
           // cancelToken: ourRequest.token,
         });
         setMeds(response.data);
@@ -29,10 +31,10 @@ function MedList(props) {
     // return () => {
     //   ourRequest.cancel();
     // };
-  }, [email]);
+  }, []);
 
   // if (isLoading) return <LoadingDotsIcon />;
-  console.log('meds==>', meds);
+  console.log('meds retrieved==>', meds);
   return;
   //   <div className='list-group'>
   //     {meds.length > 0 &&
