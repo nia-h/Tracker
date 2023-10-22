@@ -5,8 +5,8 @@ const dbBaseURL = import.meta.env.VITE_dbBaseURL;
 const medsBaseURL = import.meta.env.VITE_medsBaseURL;
 
 function HomeGuest() {
-  const [email, setEmail] = useState();
-  const [password, setPassword] = useState();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -15,7 +15,11 @@ function HomeGuest() {
         email,
         password,
       });
-      console.log('user created==>', user);
+      console.log('user==>', user);
+      if (user) {
+        setEmail('');
+        setPassword('');
+      }
     } catch (e) {
       console.log('err==>', e);
     }
@@ -23,7 +27,7 @@ function HomeGuest() {
 
   return (
     // <Page title="Welcome!" wide={true}>
-    <div className='row align-items-center'>
+    <div className='bg-blue-300'>
       <div className='col-lg-7 py-3 py-md-5'>
         <h1 className='display-3'>Meds Tracker</h1>
         <p className='lead text-muted'></p>
@@ -43,6 +47,7 @@ function HomeGuest() {
               type='text'
               placeholder='you@example.com'
               autoComplete='off'
+              value={email}
             />
           </div>
           <div className='form-group'>
@@ -56,12 +61,13 @@ function HomeGuest() {
               className='form-control'
               type='password'
               placeholder='Create a password'
+              value={password}
             />
           </div>
           <button
             type='submit'
             className='py-3 mt-4 btn btn-lg btn-success btn-block'>
-            Sign up for MedsTracker
+            Sign up for Meds Tracker
           </button>
         </form>
       </div>

@@ -1,16 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 //import Page from "./Page"
 import Axios from 'axios';
 const dbBaseURL = import.meta.env.VITE_dbBaseURL;
 // const medsBaseURL = import.meta.env.VITE_medsBaseURL;
 import { useNavigate } from 'react-router-dom';
+import { DispatchContext } from '../Contexts';
 
-function Login() {
+const Login = () => {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
   const navigate = useNavigate();
+  const mainDispatch = useContext(DispatchContext);
 
-  async function handleSubmit(e) {
+  const handleSubmit = async e => {
     e.preventDefault();
     try {
       const { data: user } = await Axios.post(`${dbBaseURL}/login`, {
@@ -19,15 +21,16 @@ function Login() {
       });
       if (user) {
         console.log('user==>', user);
-        localStorage.setItem('medTrackerToken', user.token);
-        localStorage.setItem('medTrackerUserEmail', user.email);
+        mainDispatch({ type: 'login', data: user });
+      } else {
+        console.log('Incorrect username / password.');
       }
     } catch (e) {
       console.log('err==>', e);
     }
 
     navigate('/');
-  }
+  };
 
   return (
     // <Page title="Welcome!" wide={true}>
@@ -76,6 +79,6 @@ function Login() {
     </div>
     // </Page>
   );
-}
+};
 
 export default Login;
