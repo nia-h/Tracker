@@ -1,16 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import debounce from 'lodash/debounce';
 
 import Axios from 'axios';
 const dbBaseURL = import.meta.env.VITE_dbBaseURL;
 const medsBaseURL = import.meta.env.VITE_medsBaseURL;
 //console.log('medsBaseULR==>', medsBaseURL);
+import { StateContext } from '../Contexts';
 
 const CreateEntry = () => {
   const [medArray, setMedArray] = useState([]);
   const [selected, setSelected] = useState();
   const [times, setTimes] = useState(0);
   const [pickedTimes, setPickedTimes] = useState(new Array(5).fill(null));
+  const mainState = useContext(StateContext);
 
   const timesArray = [1, 2, 3, 4, 5];
 
@@ -59,15 +61,18 @@ const CreateEntry = () => {
   const handleSubmit = async e => {
     e.preventDefault();
     const slots = pickedTimes.slice(0, times);
-    const entryInfo = {
-      userId: '6532765eac2b082245ef8514',
-      medication: selected,
-      slots,
-    };
-    console.log('entryInfo==>', entryInfo);
+    console.log('slots==>', slots);
+
+    const data = { userId: mainState.user.userId, schedule: [] };
+
+    slots.forEach(slot => {
+      data.schedule.push({ med: selected, time: slot, taken: false });
+    });
+
+    console.log('data==>', data);
     try {
-      const url = dbBaseURL + '/create-entry';
-      const response = await Axios.post(url, entryInfo);
+      const url = dbBaseURL + '/addToSchedule';
+      const response = await Axios.post(url, data);
       //setMedArray(e => data[1]);
       //console.log('medArray==>', medArray);
       console.log('response==>', response);
@@ -125,63 +130,3 @@ const CreateEntry = () => {
 };
 
 export default CreateEntry;
-
-// {const [medArray, setMedArray] = useState([]);
-// const [selected, setSelected] = useState();
-
-// async function handleLookup(medName) {
-//   if (!medName.trim()) {
-//     // alert('You must provide a medication name!');
-//     return;
-//   } else {
-//     try {
-//       const url =
-//         medsBase +
-//         `/api/rxterms/v3/search?terms=${medName}&ef=STRENGTHS_AND_FORMS`;
-//       const { data } = await Axios.get(url);
-//       console.log('data[1]==>', data[1]);
-//       setMedArray(e => data[1]);
-//       console.log('medArray==>', medArray);
-//     } catch (e) {
-//       console.log('err==>', e);
-//     }
-//   }
-// }
-
-// return (
-//   <>
-//     <input
-//       // onChange={e => setMedname(e.target.value)}
-//       onBlur={e => handleLookup(e.target.value)}
-//       autoFocus
-//       name='med-name'
-//       id='med-name'
-//       className='form-control form-control-lg form-control-title'
-//       type='text'
-//       placeholder=''
-//       autoComplete='off'
-//     />
-//     <select
-//       onChange={e => {
-//         console.log('dropdown onChange==>', e.target, value);
-//         setSelected(e.target.value);
-//         console.log('selected==>', selected);
-//       }}
-//       defaultValue='default'>
-//       <option value='default'>---</option>
-//       {medArray.length > 0 &&
-//         medArray.map(med => {
-//           console.log('looped medArray');
-//           console.log('array element==>', med);
-//           return (
-//             <option key={med} value={med}>
-//               {med}
-//             </option>
-//           );
-//         })}
-//     </select>
-//   </>
-// );
-//};
-
-//export default CreateEntry;

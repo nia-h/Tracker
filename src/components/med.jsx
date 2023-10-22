@@ -1,24 +1,26 @@
-// import React, { useEffect } from 'react';
-// import { Link } from 'react-router-dom';
+/* eslint-disable react/prop-types */
+import React, { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
-// const Med = props => {
-//   const Med = props.Med;
-//   const date = new Date(Med.createdDate);
-//   const dateFormatted = `${
-//     date.getMonth() + 1
-//   }/${date.getDate()}/${date.getFullYear()}`;
+const Med = props => {
+  const { med, time, key } = props.medListItem;
+  //st date = new Date(Med.createdDate);
+  //   const dateFormatted = `${
+  //     date.getMonth() + 1
+  //   }/${date.getDate()}/${date.getFullYear()}`;
 
-//   return (
-//     <Link
-//       onClick={props.onClick}
-//       to={`/Med/${Med._id}`}
-//       className='list-group-item list-group-item-action'>
-//       <strong>{Med.title}</strong>{' '}
-//       <span className='text-muted small'>
-//         {/* {!props.noAuthor && <>by {Med.author.username}</>} on {dateFormatted}{' '} */}
-//       </span>
-//     </Link>
-//   );
-// };
+  return (
+    <>
+      <input
+        className='bg-blue-400 m-2 rounded-md w-10'
+        type='checkbox'
+        id='medCheckbox'
+        name='medCheckbox'
+        value={med}
+      />
+      <label htmlFor='medCheckbox'>{`${time} ${med}`}</label>
+    </>
+  );
+};
 
-// export default Med;
+export default Med;
