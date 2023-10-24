@@ -12,37 +12,48 @@ const MedList = props => {
   const mainState = useContext(StateContext);
 
   const userId = mainState.userId;
+  console.log('userId==>', userId);
 
   //const { userId } = useParams();
   // const [isLoading, setIsLoading] = useState(true);
   const [medList, setMedList] = useState([]);
   const dbBaseURL = import.meta.env.VITE_dbBaseURL;
   const [controlTime, setControlTime] = useState(new Date());
+  // const [medsTaken, setMedsTaken] = useState([]);
 
-  const delay = delayMs =>
+  const delay = ms =>
     new Promise(resolve => {
-      setTimeout(resolve, delayMs);
+      setTimeout(resolve, ms);
     });
 
-  const setIntervalAsync = (fn, ms) => {
-    fn().then(() => {
-      setTimeout(() => setIntervalAsync(fn, ms), ms);
-    });
+  const handleCheck = async e => {
+    e.preventDefault();
+    console.log('e.target.id==>', e.target.id);
+    const itemId = e.target.id;
+    // setMedList(preMedList => {
+    //   preMedList[idx].taken = true;
+    //   return preMedList;
+    // });
+    // console.log('userId==>', userId);
+    console.log('itemId==>', itemId);
+
+    try {
+      const url = dbBaseURL + '/checkItem';
+      const response = await Axios.post(url, {
+        userId: '6532765eac2b082245ef8514',
+        itemId,
+      });
+      console.log('response==>', response);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
-  useEffect(() => {
-    setIntervalAsync(async () => {
-      setControlTime(new Date());
-      await delay(2000);
-    }, 2000);
-  }, []);
-
-  // setInterval(setControlTime(new Date().getTime()), 2000);
-
-  useEffect(() => {
-    console.log(controlTime);
-  }, [controlTime]);
-
+  // const setIntervalAsync = (fn, ms) => {
+  //   fn().then(() => {
+  //     setTimeout(() => setIntervalAsync(fn, ms), ms);
+  //   });
+  // };
   useEffect(() => {
     // const ourRequest = Axios.CancelToken.source();
 
@@ -66,37 +77,66 @@ const MedList = props => {
     // };
   }, []);
 
+  // useEffect(() => {
+  //   async function renewTime() {
+  //     await delay(2000);
+  //     setControlTime(new Date());
+  //   }
+  //   renewTime();
+  // }, [controlTime]);
+
+  // setInterval(setControlTime(new Date().getTime()), 2000);
+
+  useEffect(() => {
+    console.log('medList=>', medList);
+  }, [medList]);
+
   // if (isLoading) return <LoadingDotsIcon />;
-  let list = [];
-  for (let medListItem of medList) {
-    list.push(<Med medListItem={medListItem} />);
-  }
 
-  {
-    medList.length > 0 &&
-      medList.map(medListItem => {
-        return <Med medListItem={medListItem.med} key={medListItem._id} />;
-      });
-  }
-
-  //   <div className='list-group'>
-  //     {meds.length > 0 &&
-  //       meds.map(post => {
-  //         return <Med med={med} key={med._id} />;
-  //       })}
-  //     {meds.length == 0 && appState.user.email == email && (
-  //       <p className='lead text-muted text-center'>
-  //         You haven&rsquo;t created any meds yet;{' '}
-  //         <Link to='/create-post'>create one now!</Link>
-  //       </p>
-  //     )}
-  //     {meds.length == 0 && appState.user.email != email && (
-  //       <p className='lead text-muted text-center'>
-  //         {email} hasn&rsquo;t created any meds yet.
-  //       </p>
-  //     )}
-  //   </div>
-  // );
+  // let list = [];
+  // for (let medListItem of medList) {
+  //   list.push(<Med medListItem={medListItem} />);
+  // }
+  return (
+    <>
+      <ul className='list-none not-taken'>
+        {
+          medList.length > 0 &&
+            medList.map(medListItem => {
+              console.log('medListItem._id==>', medListItem._id);
+              if (medListItem.taken === false) {
+                return (
+                  <li className='bg-red-200' key={medListItem._id}>
+                    <Med
+                      medListItem={medListItem}
+                      handleCheck={handleCheck}
+                      key={medListItem._id}
+                      // id={medListItem._id}
+                    />
+                  </li>
+                );
+              }
+            })
+          // .filter(med => {
+          //   console.log(med);
+          //   return;
+          // })
+        }
+      </ul>
+      {''}
+      {''}
+      {/* <ul className='list-none taken'>
+        {medsTaken.length > 0 &&
+          medsTaken.map(med, idx => {
+            return (
+              <li className='bg-red-200' key={med._id}>
+                <Med idx={idx} med={med} key={med._id} />
+              </li>
+            );
+          })}
+      </ul> */}
+    </>
+  );
 };
 
 export default MedList;

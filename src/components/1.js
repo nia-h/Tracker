@@ -1,4 +1,11 @@
-const data = {
-  userId: '6532765eac2b082245ef8514',
-  schedule: [['BENZ-O-STHETIC (Oral Gel)', '17:37']],
-};
+const fetchPromise = fetch(
+  'https://mdn.github.io/learning-area/javascript/apis/fetching-data/can-store/products.json'
+);
+
+console.log(fetchPromise);
+
+fetchPromise.then(response => {
+  console.log(`Received response: ${response.status}`);
+});
+
+console.log('Started request…');
