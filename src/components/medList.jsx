@@ -20,40 +20,41 @@ const MedList = props => {
   const dbBaseURL = import.meta.env.VITE_dbBaseURL;
   const [controlTime, setControlTime] = useState(new Date());
   // const [medsTaken, setMedsTaken] = useState([]);
+  const [currentItemId, setCurrentItemId] = useState('');
 
-  const delay = ms =>
-    new Promise(resolve => {
-      setTimeout(resolve, ms);
-    });
+  // const delay = ms =>
+  //   new Promise(resolve => {
+  //     setTimeout(resolve, ms);
+  //   });
 
   const handleCheck = async e => {
     e.preventDefault();
-    console.log('e.target.id==>', e.target.id);
-    const itemId = e.target.id;
-    // setMedList(preMedList => {
-    //   preMedList[idx].taken = true;
-    //   return preMedList;
-    // });
-    // console.log('userId==>', userId);
-    console.log('itemId==>', itemId);
+    // console.log('e.target.id==>', e.target.id);
+    //const itemId = e.target.id;
+    const idx = e.target.name;
+    console.log('idx==>', idx);
 
-    try {
-      const url = dbBaseURL + '/checkItem';
-      const response = await Axios.post(url, {
-        userId: '6532765eac2b082245ef8514',
-        itemId,
-      });
-      console.log('response==>', response);
-    } catch (e) {
-      console.log(e);
-    }
+    const nextMedList = medList.map((med, i) => {
+      console.log('i==>', i);
+      if (i !== +idx) {
+        // No change
+        return med;
+      } else {
+        console.log('clicked med==>', med);
+        return {
+          ...med,
+          taken: !med.taken,
+        };
+      }
+    });
+    // Re-render with the new array
+
+    setMedList(nextMedList);
+
+    setCurrentItemId(e.target.id);
+    // console.log('userId==>', userId);
   };
 
-  // const setIntervalAsync = (fn, ms) => {
-  //   fn().then(() => {
-  //     setTimeout(() => setIntervalAsync(fn, ms), ms);
-  //   });
-  // };
   useEffect(() => {
     // const ourRequest = Axios.CancelToken.source();
 
@@ -77,6 +78,34 @@ const MedList = props => {
     // };
   }, []);
 
+  useEffect(() => {
+    const checkItem = async () => {
+      try {
+        console.log('currentItemId==>', currentItemId);
+        console.log('updated medList==>', medList);
+        const itemId = currentItemId;
+
+        const url = dbBaseURL + '/checkItem';
+        const response = await Axios.post(url, {
+          userId: '6532765eac2b082245ef8514',
+          itemId,
+          medList,
+        });
+        console.log('response==>', response);
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    checkItem();
+  }, [currentItemId]);
+  // const ourRequest = Axios.CancelToken.source();
+
+  // const setIntervalAsync = (fn, ms) => {
+  //   fn().then(() => {
+  //     setTimeout(() => setIntervalAsync(fn, ms), ms);
+  //   });
+  // };
+
   // useEffect(() => {
   //   async function renewTime() {
   //     await delay(2000);
@@ -87,9 +116,9 @@ const MedList = props => {
 
   // setInterval(setControlTime(new Date().getTime()), 2000);
 
-  useEffect(() => {
-    console.log('medList=>', medList);
-  }, [medList]);
+  // useEffect(() => {
+  //   console.log('medList=>', medList);
+  // }, [medList]);
 
   // if (isLoading) return <LoadingDotsIcon />;
 
@@ -99,42 +128,42 @@ const MedList = props => {
   // }
   return (
     <>
-      <ul className='list-none not-taken'>
-        {
-          medList.length > 0 &&
-            medList.map(medListItem => {
-              console.log('medListItem._id==>', medListItem._id);
-              if (medListItem.taken === false) {
-                return (
-                  <li className='bg-red-200' key={medListItem._id}>
-                    <Med
-                      medListItem={medListItem}
-                      handleCheck={handleCheck}
-                      key={medListItem._id}
-                      // id={medListItem._id}
-                    />
-                  </li>
-                );
-              }
-            })
-          // .filter(med => {
-          //   console.log(med);
-          //   return;
-          // })
-        }
-      </ul>
-      {''}
-      {''}
-      {/* <ul className='list-none taken'>
-        {medsTaken.length > 0 &&
-          medsTaken.map(med, idx => {
-            return (
-              <li className='bg-red-200' key={med._id}>
-                <Med idx={idx} med={med} key={med._id} />
-              </li>
-            );
+      <div className='not-taken'>
+        {medList.length > 0 &&
+          medList.map((medListItem, idx) => {
+            if (medListItem.taken === false) {
+              return (
+                <Med
+                  medListItem={medListItem}
+                  handleCheck={handleCheck}
+                  key={medListItem._id}
+                  taken={medListItem.taken}
+                  id={medListItem._id}
+                  idx={idx}
+                />
+              );
+            }
           })}
-      </ul> */}
+      </div>
+      {''}
+      {''}
+      <div className='taken'>
+        {medList.length > 0 &&
+          medList.map((medListItem, idx) => {
+            if (medListItem.taken === true) {
+              return (
+                <Med
+                  medListItem={medListItem}
+                  handleCheck={handleCheck}
+                  key={medListItem._id}
+                  taken={medListItem.taken}
+                  id={medListItem._id}
+                  idx={idx}
+                />
+              );
+            }
+          })}
+      </div>
     </>
   );
 };
