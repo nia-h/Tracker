@@ -1,11 +1,13 @@
 import React, { useEffect, useState, useContext } from 'react';
-import Axios from 'axios';
+import Axios, { AbortController } from 'axios';
 import { useParams, Link } from 'react-router-dom';
 import { StateContext, DispatchContext } from '../Contexts';
 // import LoadingDotsIcon from './LoadingDotsIcon';
 // import StateContext from '../StateContext';
 import Med from './Med';
 import _, { set } from 'lodash';
+
+const abortController = new AbortController();
 
 const MedList = props => {
   const mainDispatch = useContext(DispatchContext);
@@ -56,26 +58,28 @@ const MedList = props => {
   };
 
   useEffect(() => {
-    // const ourRequest = Axios.CancelToken.source();
-
     const fetchMeds = async () => {
       try {
         // const response = await Axios.get(`/${email}/meds`, {
         const response = await Axios.get(
           `${dbBaseURL}/${mainState.user.userId}/medlist`,
-          {}
+          { signal: abortController.signal }
         );
         setMedList(response.data.schedule);
 
         // setIsLoading(false);
       } catch (e) {
-        console.log('There was a problem.');
+        if (axios.isCancel(e)) {
+          console.log('Request canceled', e.message);
+        } else {
+          console.log(e);
+        }
       }
     };
     fetchMeds();
-    // return () => {
-    //   ourRequest.cancel();
-    // };
+    return () => {
+      abortController.abort();
+    };
   }, []);
 
   useEffect(() => {
@@ -86,17 +90,26 @@ const MedList = props => {
         const itemId = currentItemId;
 
         const url = dbBaseURL + '/checkItem';
-        const response = await Axios.post(url, {
-          userId: '6532765eac2b082245ef8514',
-          itemId,
-          medList,
-        });
-        console.log('response==>', response);
+        const response = await Axios.post(
+          url,
+          {
+            userId: '6532765eac2b082245ef8514',
+            medList,
+          },
+          { signal: abortController.signal }
+        );
       } catch (e) {
-        console.log(e);
+        if (axios.isCancel(e)) {
+          console.log('Request canceled', e.message);
+        } else {
+          console.log(e);
+        }
       }
     };
     checkItem();
+    return () => {
+      abortController.abort();
+    };
   }, [currentItemId]);
   // const ourRequest = Axios.CancelToken.source();
 
