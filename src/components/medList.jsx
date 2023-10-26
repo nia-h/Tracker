@@ -16,7 +16,8 @@ const MedList = props => {
   // console.log('userId==>', userId);
 
   // const [isLoading, setIsLoading] = useState(true);
-  const [medList, setMedList] = useState([]);
+  // const [medList, set] = useState([]);
+  const [profile, setProfile] = useState({});
   const dbBaseURL = import.meta.env.VITE_dbBaseURL;
   const [controlTime, setControlTime] = useState(new Date());
 
@@ -32,7 +33,7 @@ const MedList = props => {
     const idx = e.target.name;
     console.log('idx==>', idx);
 
-    const nextMedList = medList.map((med, i) => {
+    const nextSchedule = profile.schedule.map((med, i) => {
       console.log('i==>', i);
       if (i !== +idx) {
         // No change
@@ -45,18 +46,19 @@ const MedList = props => {
       }
     });
     // Re-render with the new array
-    setMedList(nextMedList);
+    //set(nextMedList);
     try {
       const url = dbBaseURL + '/checkItem';
-      const response = await Axios.post(
+      const { data } = await Axios.post(
         url,
         {
           userId: mainState.user.userId,
-          medList,
+          nextSchedule,
         }
         // { signal: abortController.signal }
       );
-      console.log('response==>', response);
+      // console.log('response==>', response);
+      setProfile(data);
     } catch (e) {
       // if (Axios.isCancel(e)) {
       //   console.log('Request canceled', e.message);
@@ -73,13 +75,45 @@ const MedList = props => {
     // const ourRequest = Axios.CancelToken.source();
 
     const fetchMeds = async () => {
+      const today = new Date().toDateString();
+      console.log('today==>', today);
       try {
-        // const response = await Axios.get(`/${email}/meds`, {
-        const response = await Axios.get(
-          `${dbBaseURL}/${mainState.user.userId}/medlist`
+        let newProfile;
+        let { data } = await Axios.get(
+          `${dbBaseURL}/${mainState.user.userId}/schedule`
           // { cancelToken: ourRequest.token }
         );
-        setMedList(response.data.schedule);
+        console.log('oldSchedule==>', data);
+        if (today === new Date(data.date).toDateString()) {
+          //setProfile(data);
+        } else {
+          console.log('data==>', data);
+          const newSchedule = data.schedule.map(med => {
+            med.taken = false;
+            delete med._id;
+            return med;
+          });
+          console.log('newSchedule==>', newSchedule);
+          newProfile = {
+            ...data,
+            schedule: newSchedule,
+          };
+          delete newProfile.date;
+          delete newProfile._id;
+          // delete newProfile.__v;
+
+          console.log('newProfile==>', newProfile);
+
+          data = await Axios.post(
+            `${dbBaseURL}/${mainState.user.userId}/renewSchedule`,
+            newProfile
+          );
+        }
+        setProfile(data);
+        console.log('profile==>', profile);
+        // { cancelToken: ourRequest.token }
+
+        // set(response.data);
 
         // setIsLoading(false);
       } catch (e) {
@@ -128,12 +162,12 @@ const MedList = props => {
   // }, [medList]);
 
   // if (isLoading) return <LoadingDotsIcon />;
-
+  if (!profile.schedule) return <></>;
   return (
     <>
       <div className='not-taken'>
-        {medList.length > 0 &&
-          medList.map((medListItem, idx) => {
+        {profile.schedule.length > 0 &&
+          profile.schedule.map((medListItem, idx) => {
             if (medListItem.taken === false) {
               return (
                 <Med
@@ -151,8 +185,8 @@ const MedList = props => {
       {''}
       {''}
       <div className='taken'>
-        {medList.length > 0 &&
-          medList.map((medListItem, idx) => {
+        {profile.schedule.length > 0 &&
+          profile.schedule.map((medListItem, idx) => {
             if (medListItem.taken === true) {
               return (
                 <Med
