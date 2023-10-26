@@ -7,8 +7,9 @@ import Axios from 'axios';
 import './App.css';
 import CreateEntry from './components/createEntry';
 import HomeGuest from './components/Homeguest';
-import Login from './components/Login';
+// import Login from './components/Login';
 import MedList from './components/medList';
+import HeaderWrapper from './components/HeaderWrapper';
 
 import { StateContext, DispatchContext } from './Contexts';
 
@@ -51,13 +52,12 @@ const App = () => {
       <DispatchContext.Provider value={dispatch}>
         <BrowserRouter>
           {/* <FlashMessages messages={state.flashMessages} /> */}
+          <HeaderWrapper />
           <Routes>
             {/* <Route path='/profile/:username/*' element={<Profile />} /> */}
             <Route path='/' element={state.loggedIn ? <MedList /> : <HomeGuest />} />
             <Route path='/create-entry' element={<CreateEntry />} />
-            <Route path='/login' element={<Login />} />
-
-            {/* <Route path='*' element={<NotFound />} /> */}
+            {/* <Route path='/login' element={<Login />} /> */}
           </Routes>
         </BrowserRouter>
       </DispatchContext.Provider>
