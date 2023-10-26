@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import Axios, { AbortController } from 'axios';
+import Axios from 'axios';
 import { useParams, Link } from 'react-router-dom';
 import { StateContext, DispatchContext } from '../Contexts';
 // import LoadingDotsIcon from './LoadingDotsIcon';
@@ -13,16 +13,12 @@ const MedList = props => {
   const mainDispatch = useContext(DispatchContext);
   const mainState = useContext(StateContext);
 
-  const userId = mainState.userId;
-  console.log('userId==>', userId);
+  // console.log('userId==>', userId);
 
-  //const { userId } = useParams();
   // const [isLoading, setIsLoading] = useState(true);
   const [medList, setMedList] = useState([]);
   const dbBaseURL = import.meta.env.VITE_dbBaseURL;
   const [controlTime, setControlTime] = useState(new Date());
-  // const [medsTaken, setMedsTaken] = useState([]);
-  const [currentItemId, setCurrentItemId] = useState('');
 
   // const delay = ms =>
   //   new Promise(resolve => {
@@ -42,7 +38,6 @@ const MedList = props => {
         // No change
         return med;
       } else {
-        console.log('clicked med==>', med);
         return {
           ...med,
           taken: !med.taken,
@@ -50,68 +45,67 @@ const MedList = props => {
       }
     });
     // Re-render with the new array
-
     setMedList(nextMedList);
+    try {
+      const url = dbBaseURL + '/checkItem';
+      const response = await Axios.post(
+        url,
+        {
+          userId: mainState.user.userId,
+          medList,
+        }
+        // { signal: abortController.signal }
+      );
+      console.log('response==>', response);
+    } catch (e) {
+      // if (Axios.isCancel(e)) {
+      //   console.log('Request canceled', e.message);
+      // } else {
+      //   console.log(e);
+      // }
+      console.log(e);
+    }
 
-    setCurrentItemId(e.target.id);
-    // console.log('userId==>', userId);
+    // setCurrentItemId(e.target.id);
   };
 
   useEffect(() => {
+    // const ourRequest = Axios.CancelToken.source();
+
     const fetchMeds = async () => {
       try {
         // const response = await Axios.get(`/${email}/meds`, {
         const response = await Axios.get(
-          `${dbBaseURL}/${mainState.user.userId}/medlist`,
-          { signal: abortController.signal }
+          `${dbBaseURL}/${mainState.user.userId}/medlist`
+          // { cancelToken: ourRequest.token }
         );
         setMedList(response.data.schedule);
 
         // setIsLoading(false);
       } catch (e) {
-        if (axios.isCancel(e)) {
-          console.log('Request canceled', e.message);
-        } else {
-          console.log(e);
-        }
+        // if (Axios.isCancel(e)) {
+        //   console.log('Request canceled', e.message);
+        // } else {
+        //   console.log(e);
+        // }
+        console.log(e);
       }
     };
     fetchMeds();
-    return () => {
-      abortController.abort();
-    };
+    // return () => {
+    //   ourRequest.cancel();
+    // };
   }, []);
 
-  useEffect(() => {
-    const checkItem = async () => {
-      try {
-        console.log('currentItemId==>', currentItemId);
-        console.log('updated medList==>', medList);
-        const itemId = currentItemId;
+  // useEffect(() => {
+  //   const checkItem = async () => {
 
-        const url = dbBaseURL + '/checkItem';
-        const response = await Axios.post(
-          url,
-          {
-            userId: '6532765eac2b082245ef8514',
-            medList,
-          },
-          { signal: abortController.signal }
-        );
-      } catch (e) {
-        if (axios.isCancel(e)) {
-          console.log('Request canceled', e.message);
-        } else {
-          console.log(e);
-        }
-      }
-    };
-    checkItem();
-    return () => {
-      abortController.abort();
-    };
-  }, [currentItemId]);
-  // const ourRequest = Axios.CancelToken.source();
+  //   };
+  //   checkItem();
+  //   // return () => {
+  //   //   abortController.abort();
+  //   // };
+  // }, [medList]);
 
   // const setIntervalAsync = (fn, ms) => {
   //   fn().then(() => {
@@ -135,10 +129,6 @@ const MedList = props => {
 
   // if (isLoading) return <LoadingDotsIcon />;
 
-  // let list = [];
-  // for (let medListItem of medList) {
-  //   list.push(<Med medListItem={medListItem} />);
-  // }
   return (
     <>
       <div className='not-taken'>
