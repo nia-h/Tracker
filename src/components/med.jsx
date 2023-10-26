@@ -26,14 +26,16 @@ const Med = props => {
       <input
         checked={taken}
         onChange={handleCheck}
-        className='w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2'
+        className={`w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2`}
         type='checkbox'
         id={_id}
         name={idx}
         value={[time, med]}
         // onClick={handleCheck}
       />
-      <label htmlFor='medCheckbox'>{`${time} ${med}`}</label>
+      <label
+        className={`${taken ? 'line-through' : ''}`}
+        htmlFor='medCheckbox'>{`${time} ${med}`}</label>
     </>
   );
 };
