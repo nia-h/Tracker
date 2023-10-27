@@ -8,10 +8,10 @@ function HeaderWrapper(props) {
   const mainState = useContext(StateContext);
 
   return (
-    <header className='header-bar bg-primary mb-3'>
-      <div className='container d-flex flex-column flex-md-row align-items-center p-3'>
-        <h4 className='my-0 mr-md-auto font-weight-normal'>
-          <Link to='/' className='text-white'>
+    <header className=''>
+      <div className='flex flex-col items-center justify-center space-x-8 space-y-3 md:flex-row md:space-y-0 md:space-x-44 md:mb-24 md:justify-end'>
+        <h4 className=''>
+          <Link to='/' className='text-blue-500'>
             My schedule
           </Link>
         </h4>

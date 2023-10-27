@@ -5,7 +5,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 // import { CSSTransition } from 'react-transition-group';
 import Axios from 'axios';
 import './App.css';
-import CreateEntry from './components/createEntry';
+import CreateEntry from './components/CreateEntry';
 import HomeGuest from './components/Homeguest';
 // import Login from './components/Login';
 import MedList from './components/medList';
@@ -32,6 +32,10 @@ const App = () => {
       case 'logout':
         draft.loggedIn = false;
         return;
+      // case 'addToSchedule':
+      // draft.loggedIn = true;
+      // draft.user = action.data;
+      //return;
     }
   };
 
@@ -48,20 +52,25 @@ const App = () => {
   }, [state.loggedIn]);
 
   return (
-    <StateContext.Provider value={state}>
-      <DispatchContext.Provider value={dispatch}>
-        <BrowserRouter>
-          {/* <FlashMessages messages={state.flashMessages} /> */}
-          <HeaderWrapper />
-          <Routes>
-            {/* <Route path='/profile/:username/*' element={<Profile />} /> */}
-            <Route path='/' element={state.loggedIn ? <MedList /> : <HomeGuest />} />
-            <Route path='/create-entry' element={<CreateEntry />} />
-            {/* <Route path='/login' element={<Login />} /> */}
-          </Routes>
-        </BrowserRouter>
-      </DispatchContext.Provider>
-    </StateContext.Provider>
+    <div className='flex items-center justify-center min-h-screen bg-cyan-50'>
+      <div className='bg-white min-w-[80%] p-6 m-3 space-y-10 shadow-2xl rounded-3xl'>
+        <StateContext.Provider value={state}>
+          <DispatchContext.Provider value={dispatch}>
+            <BrowserRouter>
+              <HeaderWrapper />
+              <Routes>
+                {/* <Route path='/profile/:username/*' element={<Profile />} />  */}
+                <Route
+                  path='/'
+                  element={state.loggedIn ? <MedList /> : <HomeGuest />}
+                />
+                <Route path='/create-entry' element={<CreateEntry />} />
+              </Routes>
+            </BrowserRouter>
+          </DispatchContext.Provider>
+        </StateContext.Provider>
+      </div>
+    </div>
   );
 };
 

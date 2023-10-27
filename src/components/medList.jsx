@@ -6,6 +6,7 @@ import { StateContext, DispatchContext } from '../Contexts';
 // import StateContext from '../StateContext';
 import Med from './Med';
 import _, { set } from 'lodash';
+import CreateEntry from './CreateEntry';
 
 const abortController = new AbortController();
 
@@ -162,44 +163,51 @@ const MedList = props => {
   // }, [medList]);
 
   // if (isLoading) return <LoadingDotsIcon />;
-  if (!profile.schedule) return <></>;
+  if (!profile.schedule) return <>testing</>;
   return (
     <>
-      <div className='not-taken'>
-        {profile.schedule.length > 0 &&
-          profile.schedule.map((medListItem, idx) => {
-            if (medListItem.taken === false) {
-              return (
-                <Med
-                  medListItem={medListItem}
-                  handleCheck={handleCheck}
-                  key={medListItem._id}
-                  taken={medListItem.taken}
-                  id={medListItem._id}
-                  idx={idx}
-                />
-              );
-            }
-          })}
+      <div>
+        <div>
+          <div className='bg-red-100 rounded-2xl px-4 py-8 my-4 not-taken'>
+            {profile.schedule.length > 0 &&
+              profile.schedule.map((medListItem, idx) => {
+                if (medListItem.taken === false) {
+                  return (
+                    <Med
+                      medListItem={medListItem}
+                      handleCheck={handleCheck}
+                      key={medListItem._id}
+                      taken={medListItem.taken}
+                      id={medListItem._id}
+                      idx={idx}
+                    />
+                  );
+                }
+              })}
+          </div>
+          {''}
+
+          <div className='bg-gray-200 rounded-2xl px-4 py-8 my-2 taken'>
+            {profile.schedule.length > 0 &&
+              profile.schedule.map((medListItem, idx) => {
+                if (medListItem.taken === true) {
+                  return (
+                    <Med
+                      medListItem={medListItem}
+                      handleCheck={handleCheck}
+                      key={medListItem._id}
+                      taken={medListItem.taken}
+                      id={medListItem._id}
+                      idx={idx}
+                    />
+                  );
+                }
+              })}
+          </div>
+        </div>
       </div>
-      {''}
-      {''}
-      <div className='taken'>
-        {profile.schedule.length > 0 &&
-          profile.schedule.map((medListItem, idx) => {
-            if (medListItem.taken === true) {
-              return (
-                <Med
-                  medListItem={medListItem}
-                  handleCheck={handleCheck}
-                  key={medListItem._id}
-                  taken={medListItem.taken}
-                  id={medListItem._id}
-                  idx={idx}
-                />
-              );
-            }
-          })}
+      <div>
+        <CreateEntry />
       </div>
     </>
   );
