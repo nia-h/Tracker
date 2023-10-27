@@ -34,44 +34,41 @@ const HeaderLoggedOut = () => {
 
   return (
     // <Page title="Welcome!" wide={true}>
-    <div className='row align-items-center'>
-      <div className='col-lg-7 py-3 py-md-5'>
-        <h1 className='display-3'>Log In</h1>
-        <p className='lead text-muted'></p>
-      </div>
-      <div className='col-lg-5 pl-lg-5 pb-3 py-lg-5'>
-        <form onSubmit={handleSubmit}>
-          <div className='form-group'></div>
-          <div className='form-group'>
-            <label htmlFor='email-register' className='text-muted mb-1'>
+    <div className=''>
+      <div className=''>
+        <form
+          className='flex flex-col items-center justify-center space-y-3 md:flex-row md:space-y-0 md:space-x-4 md:mb-24 md:justify-end'
+          onSubmit={handleSubmit}>
+          <div className=''>
+            <label htmlFor='email-register' className=''>
               <small>Email</small>
             </label>
             <input
               onChange={e => setEmail(e.target.value)}
               id='email-register'
               name='email'
-              className='form-control'
+              className=''
               type='text'
               placeholder='you@example.com'
               autoComplete='off'
             />
           </div>
           <div className='form-group'>
-            <label htmlFor='password-register' className='text-muted mb-1'>
+            <label htmlFor='password-register' className=''>
               <small>Password</small>
             </label>
             <input
               onChange={e => setPassword(e.target.value)}
               id='password-register'
               name='password'
-              className='form-control'
+              className=''
               type='password'
               placeholder='Create a password'
             />
           </div>
           <button
             type='submit'
-            className='py-3 mt-4 btn btn-lg btn-success btn-block'>
+            className='w-1/4 transition-all duration-150 bg-secondary text-white  rounded-lg hover:border-t-8 hover:border-b-0 hover:bg-primary hover:shadow-lg'>
             Log In
           </button>
         </form>
