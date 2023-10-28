@@ -15,13 +15,12 @@ const HeaderLoggedOut = () => {
   const handleSubmit = async e => {
     e.preventDefault();
     try {
-      const { data: user } = await Axios.post(`${dbBaseURL}/login`, {
+      const { data } = await Axios.post(`${dbBaseURL}/login`, {
         email,
         password,
       });
-      if (user) {
-        console.log('user==>', user);
-        mainDispatch({ type: 'login', data: user });
+      if (data) {
+        mainDispatch({ type: 'login', data });
       } else {
         console.log('Incorrect username / password.');
       }

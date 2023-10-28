@@ -21,6 +21,7 @@ const App = () => {
       token: localStorage.getItem('medsTrackerToken'),
       userId: localStorage.getItem('medsTrackerUserId'),
     },
+    profile: {},
   };
 
   const mainReducer = (draft, action) => {
@@ -28,14 +29,14 @@ const App = () => {
       case 'login':
         draft.loggedIn = true;
         draft.user = action.data;
+        draft.profile = action.data.profile;
         return;
       case 'logout':
         draft.loggedIn = false;
         return;
-      // case 'addToSchedule':
-      // draft.loggedIn = true;
-      // draft.user = action.data;
-      //return;
+      case 'addToSchedule':
+        draft.profile = action.data;
+        return;
     }
   };
 
