@@ -43,3 +43,24 @@
   position: relative;
   top: -7px;
 }
+
+/* ::-webkit-select:option { */
+/* Chrome/Opera/Safari */
+/*white-space: pre-line;
+  position: relative;
+  top: -7px;
+} */
+
+/* select:required: {
+  color: gray;
+}
+option[value=''][disabled] {
+  display: none;
+}
+option {
+  color: red;
+} */
+
+.unicone {
+  color: red;
+}
