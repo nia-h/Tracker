@@ -122,7 +122,7 @@ const CreateEntry = () => {
             <div className='w-full md:w-[50%]'>
               <input
                 type='text'
-                className='w-full text-sm p-3 border border-gray-300 rounded-md placeholder:font-sans placeholder:font-light'
+                className='w-full text-sm pt-4 pb-2 px-3 h-10 border border-gray-300 rounded-md placeholdder- placeholder-gray-400 placeholder:font-sans placeholder:font-light'
                 placeholder='name of medication'
                 id='medname'
                 list='medArray'
@@ -149,19 +149,28 @@ const CreateEntry = () => {
               />
             </label> */}
             <div className='w-full md:w-[50%]'>
-              <input
+              {/* <input
                 type='text'
-                className='w-full text-sm text-wrap p-3 border border-gray-300 rounded-md placeholder:font-sans placeholder:font-light placehoder:text-sm'
-                placeholder='how many times a day do you take this medication?'
-                id='times'
-                list='timesArray'
-                onChange={e => setTimes(e.target.value)}
-              />
-              <datalist id='timesArray'>
+                
+              /> */}
+              {/* <datalist id='timesArray'>
                 {timesArray.map(time => (
                   <option key={time}>{time}</option>
                 ))}
-              </datalist>
+              </datalist> */}
+              <select
+                id='timesArray'
+                required
+                className='w-full text-sm p-3 h-10 border font-sans font-light border-gray-300 rounded-md invalid:text-gray-400'
+                onChange={e => setTimes(e.target.value)}>
+                <option className='prompt-option' value='' selected>
+                  how many times a day do you take this medication?
+                </option>
+                {/* the value='' makes above option invalid */}
+                {timesArray.map(time => (
+                  <option className='optin' key={time}>{`${time}`}</option> //If the value attribute is not specified, the content will be passed as a value instead.
+                ))}
+              </select>
             </div>
           </div>
 

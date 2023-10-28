@@ -8,7 +8,7 @@ import './App.css';
 import CreateEntry from './components/CreateEntry';
 import HomeGuest from './components/Homeguest';
 // import Login from './components/Login';
-import MedList from './components/medList';
+import MedList from './components/MedList';
 import HeaderWrapper from './components/HeaderWrapper';
 
 import { StateContext, DispatchContext } from './Contexts';
