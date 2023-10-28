@@ -13,15 +13,16 @@ const abortController = new AbortController();
 const MedList = props => {
   const mainDispatch = useContext(DispatchContext);
   const mainState = useContext(StateContext);
+  console.log('mainState==>', mainState);
 
   // console.log('userId==>', userId);
 
   // const [isLoading, setIsLoading] = useState(true);
   // const [medList, set] = useState([]);
-  const [profile, setProfile] = useState({});
+  // const [profile, setProfile] = useState({});
   const dbBaseURL = import.meta.env.VITE_dbBaseURL;
-  const [controlTime, setControlTime] = useState(new Date());
-
+  // const [controlTime, setControlTime] = useState(new Date());
+  const profile = mainState.profile;
   // const delay = ms =>
   //   new Promise(resolve => {
   //     setTimeout(resolve, ms);
@@ -59,7 +60,8 @@ const MedList = props => {
         // { signal: abortController.signal }
       );
       // console.log('response==>', response);
-      setProfile(data);
+      // setProfile(data);
+      mainDispatch({ type: 'addToSchedule', data });
     } catch (e) {
       // if (Axios.isCancel(e)) {
       //   console.log('Request canceled', e.message);
@@ -110,8 +112,8 @@ const MedList = props => {
             newProfile
           );
         }
-        setProfile(data);
-        console.log('profile==>', profile);
+        mainDispatch({ type: 'addToSchedule', data });
+
         // { cancelToken: ourRequest.token }
 
         // set(response.data);

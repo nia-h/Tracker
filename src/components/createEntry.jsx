@@ -5,7 +5,7 @@ import Axios from 'axios';
 const dbBaseURL = import.meta.env.VITE_dbBaseURL;
 const medsBaseURL = import.meta.env.VITE_medsBaseURL;
 //console.log('medsBaseULR==>', medsBaseURL);
-import { StateContext } from '../Contexts';
+import { StateContext, DispatchContext } from '../Contexts';
 import { redirect, useNavigate } from 'react-router-dom';
 
 const CreateEntry = () => {
@@ -14,6 +14,8 @@ const CreateEntry = () => {
   const [times, setTimes] = useState(0);
   const [pickedTimes, setPickedTimes] = useState(new Array(5).fill(null));
   const mainState = useContext(StateContext);
+  const mainDispatch = useContext(DispatchContext);
+
   const navigate = useNavigate();
 
   const timesArray = [1, 2, 3, 4, 5];
@@ -90,10 +92,10 @@ const CreateEntry = () => {
       //setMedArray(e => data[1]);
       //console.log('medArray==>', medArray);
       console.log('response==>', response);
+      mainDispatch({ type: 'addToSchedule', data: response.data });
     } catch (e) {
       console.log('err==>', e);
     }
-    naviate('/');
   };
 
   useEffect(() => {

@@ -23,7 +23,9 @@ function HeaderLoggedIn(props) {
   return (
     <>
       <div className=''>
-        <button className='flex items-center text-sm font-medium justify-center py-3 px-5 space-x-3 border-2 border-secondary rounded-lg shadow-sm hover:bg-opacity-30 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-150'>
+        <button
+          onClick={handleLogout}
+          className='flex items-center text-sm font-medium justify-center py-3 px-5 space-x-3 border-2 border-secondary rounded-lg shadow-sm hover:bg-opacity-30 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-150'>
           <span>Sign Out</span>
         </button>
       </div>
