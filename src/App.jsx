@@ -7,7 +7,7 @@ import Axios from 'axios';
 import './App.css';
 import HomeGuest from './components/Homeguest';
 // import Login from './components/Login';
-import MedList from './components/MedList.jsx';
+import MedList from './components/medList';
 import HeaderWrapper from './components/HeaderWrapper';
 
 import { StateContext, DispatchContext } from './Contexts';
