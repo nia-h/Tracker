@@ -22,14 +22,13 @@ const HeaderLoggedOut = () => {
       if (user) {
         console.log('user==>', user);
         mainDispatch({ type: 'login', data: user });
+        navigate('/');
       } else {
         console.log('Incorrect username / password.');
       }
     } catch (e) {
       console.log('err==>', e);
     }
-
-    navigate('/');
   };
 
   return (
