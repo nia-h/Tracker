@@ -4,7 +4,7 @@ import { useParams, Link } from 'react-router-dom';
 import { StateContext, DispatchContext } from '../Contexts';
 // import LoadingDotsIcon from './LoadingDotsIcon';
 // import StateContext from '../StateContext';
-import Med from './Med';
+import Med from './Med.jsx';
 import _, { set } from 'lodash';
 import CreateEntry from './CreateEntry';
 
