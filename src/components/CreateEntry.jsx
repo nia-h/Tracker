@@ -1,12 +1,12 @@
-import React, { useEffect, useState, useContext } from 'react';
-import debounce from 'lodash/debounce';
+import React, { useEffect, useState, useContext } from "react";
+import debounce from "lodash/debounce";
 
-import Axios from 'axios';
+import Axios from "axios";
 const dbBaseURL = import.meta.env.VITE_dbBaseURL;
 const medsBaseURL = import.meta.env.VITE_medsBaseURL;
 //console.log('medsBaseULR==>', medsBaseURL);
-import { StateContext, DispatchContext } from '../Contexts';
-import { redirect, useNavigate } from 'react-router-dom';
+import { StateContext, DispatchContext } from "../Contexts";
+import { redirect, useNavigate } from "react-router-dom";
 
 const CreateEntry = () => {
   const [medArray, setMedArray] = useState([]);
@@ -20,33 +20,34 @@ const CreateEntry = () => {
 
   const timesArray = [1, 2, 3, 4, 5];
 
-  const generateTimePickers = n => {
+  const generateTimePickers = (n) => {
     let content = [];
     for (let i = 0; i < n; i++) {
       content.push(
-        <div className='flex flex-col space-y-2 items-start'>
-          <p className='text-md font-normal text-secondary'>Dose{i + 1}</p>
+        <div className="flex flex-col items-start space-y-2">
+          <p className="text-md font-normal text-secondary">Dose{i + 1}</p>
           <input
             id={`timepicker-${i}`}
             key={`timepicker-${i}`}
-            onBlur={e => handleTimePicker(e, i)}
-            type='time'></input>
-        </div>
+            onBlur={(e) => handleTimePicker(e, i)}
+            type="time"
+          ></input>
+        </div>,
       );
     }
     return (
       <>
-        <p className='self-start text-md mt-4 font-medium text-primary'>
+        <p className="text-md mt-4 self-start font-medium text-primary">
           Please select medication administration times
         </p>
-        <div className='grid grid-cols-2 gap-8 p-2 md:grid-cols-5 mt-2 md:space-y-0 md:gap-10'>
+        <div className="mt-2 grid grid-cols-2 gap-8 p-2 md:grid-cols-5 md:gap-10 md:space-y-0">
           {content}
         </div>
       </>
     );
   };
 
-  const handleChange = async event => {
+  const handleChange = async (event) => {
     const medName = event.target.value;
 
     try {
@@ -54,61 +55,63 @@ const CreateEntry = () => {
         medsBaseURL +
         `/api/rxterms/v3/search?terms=${medName}&ef=STRENGTHS_AND_FORMS`;
       const { data } = await Axios.get(url);
-      setMedArray(e => data[1]);
+      setMedArray((e) => data[1]);
       //console.log('medArray==>', medArray);
     } catch (e) {
-      console.log('err==>', e);
+      console.log("err==>", e);
     }
   };
 
-  const handleSelected = e => {
+  const handleSelected = (e) => {
     setSelected(e.target.value);
   };
 
   const handleTimePicker = (e, i) => {
-    console.log('i==>', i);
-    setPickedTimes(prevState => {
+    console.log("i==>", i);
+    setPickedTimes((prevState) => {
       const copy = [...prevState];
       copy[i] = e.target.value;
       return copy;
     });
   };
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const slots = pickedTimes.slice(0, times);
-    console.log('slots==>', slots);
+    console.log("slots==>", slots);
 
     const data = { userId: mainState.user.userId, schedule: [] };
 
-    slots.forEach(slot => {
+    slots.forEach((slot) => {
       data.schedule.push({ med: selected, time: slot, taken: false });
     });
 
-    console.log('data==>', data);
+    console.log("data==>", data);
     try {
-      const url = dbBaseURL + '/addToSchedule';
+      const url = dbBaseURL + "/addToSchedule";
       const response = await Axios.post(url, data);
       //setMedArray(e => data[1]);
       //console.log('medArray==>', medArray);
-      console.log('response==>', response);
-      mainDispatch({ type: 'addToSchedule', data: response.data });
+      console.log("response==>", response);
+      mainDispatch({ type: "addToSchedule", data: response.data });
     } catch (e) {
-      console.log('err==>', e);
+      console.log("err==>", e);
     }
   };
 
   useEffect(() => {
     // console.log('current selected==>', selected);
     // console.log('frequencey==>' + times + ` times`);
-    console.log('pickedTimes==>', pickedTimes);
+    console.log("pickedTimes==>", pickedTimes);
   }, [pickedTimes]);
 
   return (
     <>
-      <div className='flex flex-col items-start rounded-lg p-4 space-y-2'>
-        <div className='text-lg font-medium text-primary'>Add a new medication</div>
-        <form className='w-full flex-col items-center' onSubmit={handleSubmit}>
+      <div className="flex flex-col items-start space-y-2 rounded-lg p-4">
+        <div className="text-lg font-medium text-primary">
+          Add a new medication
+        </div>
+        <form className="w-full flex-col items-center" onSubmit={handleSubmit}>
           {/* <label htmlFor='medname'> */}
           {/* <input
               id='medname'
@@ -118,19 +121,19 @@ const CreateEntry = () => {
               onBlur={e => handleSelected(e)}
             /> */}
           {/* </label> */}
-          <div className='flex flex-col space-y-2 items-center justify-start md:flex-row md:space-x-2 md:space-y-0'>
-            <div className='w-full md:w-[50%]'>
+          <div className="flex flex-col items-center justify-start space-y-2 md:flex-row md:space-x-2 md:space-y-0">
+            <div className="w-full md:w-[50%]">
               <input
-                type='text'
-                className='w-full text-sm pt-4 pb-2 px-3 h-10 border border-gray-300 rounded-md placeholdder- placeholder-gray-400 placeholder:font-sans placeholder:font-light'
-                placeholder='name of medication'
-                id='medname'
-                list='medArray'
+                type="text"
+                className="h-10 w-full rounded-md border border-gray-300 px-3 pb-2 pt-4 text-sm placeholder-gray-400 placeholder:font-sans placeholder:font-light"
+                placeholder="name of medication"
+                id="medname"
+                list="medArray"
                 onChange={debounce(handleChange, 200)}
-                onBlur={e => handleSelected(e)}
+                onBlur={(e) => handleSelected(e)}
               />
-              <datalist id='medArray'>
-                {medArray.map(med => (
+              <datalist id="medArray">
+                {medArray.map((med) => (
                   <option value={med} key={med}>
                     {med}
                   </option>
@@ -148,7 +151,7 @@ const CreateEntry = () => {
                 onChange={e => setTimes(e.target.value)}
               />
             </label> */}
-            <div className='w-full md:w-[50%]'>
+            <div className="w-full md:w-[50%]">
               {/* <input
                 type='text'
                 
@@ -159,28 +162,30 @@ const CreateEntry = () => {
                 ))}
               </datalist> */}
               <select
-                id='timesArray'
+                id="timesArray"
                 required
-                className='w-full text-sm p-3 h-10 border font-sans font-light border-gray-300 rounded-md invalid:text-gray-400'
-                onChange={e => setTimes(e.target.value)}>
-                <option className='prompt-option' value='' selected>
+                className="h-10 w-full rounded-md border border-gray-300 p-3 font-sans text-sm font-light invalid:text-gray-400"
+                onChange={(e) => setTimes(e.target.value)}
+              >
+                <option className="prompt-option" value="" selected>
                   how many times a day do you take this medication?
                 </option>
                 {/* the value='' makes above option invalid */}
-                {timesArray.map(time => (
-                  <option className='optin' key={time}>{`${time}`}</option> //If the value attribute is not specified, the content will be passed as a value instead.
+                {timesArray.map((time) => (
+                  <option className="optin" key={time}>{`${time}`}</option> //If the value attribute is not specified, the content will be passed as a value instead.
                 ))}
               </select>
             </div>
           </div>
 
-          <div className='flex flex-col justify-start items-center'>
+          <div className="flex flex-col items-center justify-start">
             {times > 0 && generateTimePickers(times)}
           </div>
-          <div className='flex w-full items-center justify-center'>
+          <div className="flex w-full items-center justify-center">
             <button
-              type='submit'
-              className=' text-white px-4 py-3 my-6 bg-orange text-center border border-orange rounded-lg duration-200 hover:bg-warm hover:border-warm'>
+              type="submit"
+              className=" my-6 rounded-lg border border-orange bg-orange px-4 py-3 text-center text-white duration-200 hover:border-warm hover:bg-warm"
+            >
               OK
             </button>
           </div>
