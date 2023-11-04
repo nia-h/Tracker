@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useRef } from "react";
 import debounce from "lodash/debounce";
 
 import Axios from "axios";
@@ -12,6 +12,8 @@ const CreateEntry = () => {
   const [medArray, setMedArray] = useState([]);
   const [selected, setSelected] = useState();
   const [times, setTimes] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const inputRef = useRef();
   const [pickedTimes, setPickedTimes] = useState(new Array(5).fill(null));
   const mainState = useContext(StateContext);
   const mainDispatch = useContext(DispatchContext);
@@ -56,7 +58,6 @@ const CreateEntry = () => {
         `/api/rxterms/v3/search?terms=${medName}&ef=STRENGTHS_AND_FORMS`;
       const { data } = await Axios.get(url);
       setMedArray((e) => data[1]);
-      //console.log('medArray==>', medArray);
     } catch (e) {
       console.log("err==>", e);
     }
@@ -77,6 +78,8 @@ const CreateEntry = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (inputRef.current === null) return;
+    setIsLoading(true);
     const slots = pickedTimes.slice(0, times);
     console.log("slots==>", slots);
 
@@ -92,18 +95,19 @@ const CreateEntry = () => {
       const response = await Axios.post(url, data);
       //setMedArray(e => data[1]);
       //console.log('medArray==>', medArray);
-      console.log("response==>", response);
+      // console.log("response==>", response);
       mainDispatch({ type: "addToSchedule", data: response.data });
+      setIsLoading(false);
     } catch (e) {
       console.log("err==>", e);
     }
   };
 
-  useEffect(() => {
-    // console.log('current selected==>', selected);
-    // console.log('frequencey==>' + times + ` times`);
-    console.log("pickedTimes==>", pickedTimes);
-  }, [pickedTimes]);
+  // useEffect(() => {
+  //   // console.log('current selected==>', selected);
+  //   // console.log('frequencey==>' + times + ` times`);
+  //   console.log("pickedTimes==>", pickedTimes);
+  // }, [pickedTimes]);
 
   return (
     <>
@@ -121,10 +125,12 @@ const CreateEntry = () => {
               onBlur={e => handleSelected(e)}
             /> */}
           {/* </label> */}
-          <div className="flex flex-col items-center justify-start space-y-2 md:flex-row md:space-x-2 md:space-y-0">
+          <div className="flex flex-col items-center justify-start  space-y-2 md:flex-row md:space-x-2 md:space-y-0    ">
             <div className="w-full md:w-[50%]">
               <input
+                required
                 type="text"
+                ref={inputRef}
                 className="h-10 w-full rounded-md border border-gray-300 px-3 pb-2 pt-4 text-sm placeholder-gray-400 placeholder:font-sans placeholder:font-light"
                 placeholder="name of medication"
                 id="medname"
@@ -167,7 +173,7 @@ const CreateEntry = () => {
                 className="h-10 w-full rounded-md border border-gray-300 p-3 font-sans text-sm font-light invalid:text-gray-400"
                 onChange={(e) => setTimes(e.target.value)}
               >
-                <option className="prompt-option" value="" selected>
+                <option className="" value="" selected disabled>
                   how many times a day do you take this medication?
                 </option>
                 {/* the value='' makes above option invalid */}
@@ -183,8 +189,9 @@ const CreateEntry = () => {
           </div>
           <div className="flex w-full items-center justify-center">
             <button
+              disabled={isLoading}
               type="submit"
-              className=" my-6 rounded-lg border border-orange bg-orange px-4 py-3 text-center text-white duration-200 hover:border-warm hover:bg-warm"
+              className="my-6 rounded-lg border border-orange bg-orange px-4 py-3 text-center text-white duration-200 hover:border-warm hover:bg-warm disabled:bg-blue-300"
             >
               OK
             </button>

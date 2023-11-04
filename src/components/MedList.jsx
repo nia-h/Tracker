@@ -1,23 +1,21 @@
-import React, { useEffect, useState, useContext } from 'react';
-import Axios from 'axios';
-import { useParams, Link } from 'react-router-dom';
-import { StateContext, DispatchContext } from '../Contexts';
+import React, { useEffect, useState, useContext, useRef } from "react";
+import Axios from "axios";
+import { useParams, Link } from "react-router-dom";
+import { StateContext, DispatchContext } from "../Contexts";
 // import LoadingDotsIcon from './LoadingDotsIcon';
 // import StateContext from '../StateContext';
-import Med from './Med.jsx';
-import _, { set } from 'lodash';
-import CreateEntry from './CreateEntry';
+import Med from "./Med.jsx";
+import _, { set } from "lodash";
+import CreateEntry from "./CreateEntry";
 
 const abortController = new AbortController();
 
-const MedList = props => {
+const MedList = (props) => {
   const mainDispatch = useContext(DispatchContext);
   const mainState = useContext(StateContext);
-  console.log('mainState==>', mainState);
 
   // console.log('userId==>', userId);
 
-  // const [isLoading, setIsLoading] = useState(true);
   // const [medList, set] = useState([]);
   // const [profile, setProfile] = useState({});
   const dbBaseURL = import.meta.env.VITE_dbBaseURL;
@@ -28,15 +26,15 @@ const MedList = props => {
   //     setTimeout(resolve, ms);
   //   });
 
-  const handleCheck = async e => {
+  const handleCheck = async (e) => {
     e.preventDefault();
     // console.log('e.target.id==>', e.target.id);
     //const itemId = e.target.id;
     const idx = e.target.name;
-    console.log('idx==>', idx);
+    console.log("idx==>", idx);
 
     const nextSchedule = profile.schedule.map((med, i) => {
-      console.log('i==>', i);
+      console.log("i==>", i);
       if (i !== +idx) {
         // No change
         return med;
@@ -50,18 +48,18 @@ const MedList = props => {
     // Re-render with the new array
     //set(nextMedList);
     try {
-      const url = dbBaseURL + '/checkItem';
+      const url = dbBaseURL + "/checkItem";
       const { data } = await Axios.post(
         url,
         {
           userId: mainState.user.userId,
           nextSchedule,
-        }
+        },
         // { signal: abortController.signal }
       );
       // console.log('response==>', response);
       // setProfile(data);
-      mainDispatch({ type: 'addToSchedule', data });
+      mainDispatch({ type: "addToSchedule", data });
     } catch (e) {
       // if (Axios.isCancel(e)) {
       //   console.log('Request canceled', e.message);
@@ -79,24 +77,24 @@ const MedList = props => {
 
     const fetchMeds = async () => {
       const today = new Date().toDateString();
-      console.log('today==>', today);
+      console.log("today==>", today);
       try {
         let newProfile;
         let { data } = await Axios.get(
-          `${dbBaseURL}/${mainState.user.userId}/schedule`
+          `${dbBaseURL}/${mainState.user.userId}/schedule`,
           // { cancelToken: ourRequest.token }
         );
-        console.log('oldSchedule==>', data);
+        console.log("oldSchedule==>", data);
         if (today === new Date(data.date).toDateString()) {
           //setProfile(data);
         } else {
-          console.log('data==>', data);
-          const newSchedule = data.schedule.map(med => {
+          console.log("data==>", data);
+          const newSchedule = data.schedule.map((med) => {
             med.taken = false;
             delete med._id;
             return med;
           });
-          console.log('newSchedule==>', newSchedule);
+          console.log("newSchedule==>", newSchedule);
           newProfile = {
             ...data,
             schedule: newSchedule,
@@ -105,14 +103,14 @@ const MedList = props => {
           delete newProfile._id;
           // delete newProfile.__v;
 
-          console.log('newProfile==>', newProfile);
+          console.log("newProfile==>", newProfile);
 
           data = await Axios.post(
             `${dbBaseURL}/${mainState.user.userId}/renewSchedule`,
-            newProfile
+            newProfile,
           );
         }
-        mainDispatch({ type: 'addToSchedule', data });
+        mainDispatch({ type: "addToSchedule", data });
 
         // { cancelToken: ourRequest.token }
 
@@ -165,12 +163,12 @@ const MedList = props => {
   // }, [medList]);
 
   // if (isLoading) return <LoadingDotsIcon />;
-  if (!profile.schedule) return <>testing</>;
+  if (!profile.schedule) return <>Loading...</>;
   return (
     <>
       <div>
         <div>
-          <div className='bg-red-100 rounded-2xl px-4 py-8 my-4 not-taken'>
+          <div className="not-taken my-4 rounded-2xl bg-red-100 px-4 py-8">
             {profile.schedule.length > 0 &&
               profile.schedule.map((medListItem, idx) => {
                 if (medListItem.taken === false) {
@@ -187,9 +185,9 @@ const MedList = props => {
                 }
               })}
           </div>
-          {''}
+          {""}
 
-          <div className='bg-gray-200 rounded-2xl px-4 py-8 my-2 taken'>
+          <div className="taken my-2 rounded-2xl bg-gray-200 px-4 py-8">
             {profile.schedule.length > 0 &&
               profile.schedule.map((medListItem, idx) => {
                 if (medListItem.taken === true) {
