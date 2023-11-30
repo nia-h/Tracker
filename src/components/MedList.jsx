@@ -36,13 +36,13 @@ const MedList = (props) => {
 
   const handleCheck = async (e) => {
     e.preventDefault();
+    // e.target.checked = !e.target.checked;
     // console.log('e.target.id==>', e.target.id);
     //const itemId = e.target.id;
     const idx = e.target.name;
-    console.log("idx==>", idx);
 
     const nextSchedule = profile.schedule.map((med, i) => {
-      console.log("i==>", i);
+      // console.log("i==>", i);
       if (i !== +idx) {
         // No change
         return med;
