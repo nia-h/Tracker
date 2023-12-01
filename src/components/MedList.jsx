@@ -45,29 +45,32 @@ const MedList = (props) => {
         };
       }
     });
+
+    const newProfile = { ...profile, schedule: nextSchedule };
+    mainDispatch({ type: "addToSchedule", data: newProfile });
     // Re-render with the new array
     //set(nextMedList);
-    try {
-      const url = dbBaseURL + "/checkItem";
-      const { data } = await Axios.post(
-        url,
-        {
-          userId: mainState.user.userId,
-          nextSchedule,
-        },
-        // { signal: abortController.signal }
-      );
-      // console.log('response==>', response);
-      // setProfile(data);
-      mainDispatch({ type: "addToSchedule", data });
-    } catch (e) {
-      // if (Axios.isCancel(e)) {
-      //   console.log('Request canceled', e.message);
-      // } else {
-      //   console.log(e);
-      // }
-      console.log(e);
-    }
+    // try {
+    //   const url = dbBaseURL + "/checkItem";
+    //   const { data } = await Axios.post(
+    //     url,
+    //     {
+    //       userId: mainState.user.userId,
+    //       nextSchedule,
+    //     },
+    //     // { signal: abortController.signal }
+    //   );
+    //   // console.log('response==>', response);
+    //   // setProfile(data);
+
+    // } catch (e) {
+    //   // if (Axios.isCancel(e)) {
+    //   //   console.log('Request canceled', e.message);
+    //   // } else {
+    //   //   console.log(e);
+    //   // }
+    //   console.log(e);
+    // }
 
     // setCurrentItemId(e.target.id);
   };
@@ -76,6 +79,7 @@ const MedList = (props) => {
     // const ourRequest = Axios.CancelToken.source();
 
     const fetchMeds = async () => {
+      console.log("fetchMeds called");
       const today = new Date().toDateString();
       console.log("today==>", today);
       try {
@@ -161,7 +165,7 @@ const MedList = (props) => {
   // useEffect(() => {
   //   console.log('medList=>', medList);
   // }, [medList]);
-
+  console.log("profle==>", profile);
   // if (isLoading) return <LoadingDotsIcon />;
   if (!profile.schedule) return <>Loading...</>;
   return (
