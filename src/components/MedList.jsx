@@ -7,10 +7,10 @@ import React, {
   useLayoutEffect,
 } from "react";
 import Axios from "axios";
-import { useParams, Link } from "react-router-dom";
+
 import { StateContext, DispatchContext } from "../Contexts";
 // import LoadingDotsIcon from './LoadingDotsIcon';
-// import StateContext from '../StateContext';
+
 import Med from "./Med.jsx";
 import _, { set } from "lodash";
 // import CreateEntry from "./CreateEntry";
@@ -30,21 +30,12 @@ const MedList = (props) => {
   const [isAddMedModalOpen, setIsAddMedModalOpen] = useState(false);
 
   const profile = mainState.profile;
-  // const delay = ms =>
-  //   new Promise(resolve => {
-  //     setTimeout(resolve, ms);
-  //   });
 
   const handleCheck = async (e) => {
-    //    // e.target.checked = !e.target.checked;
-    // console.log('e.target.id==>', e.target.id);
-    //const itemId = e.target.id;
     const id = e.target.id;
 
     const nextSchedule = profile.schedule.map((med, i) => {
-      // console.log("i==>", i);
       if (med._id !== id) {
-        // No change
         return med;
       } else {
         return {
@@ -54,7 +45,7 @@ const MedList = (props) => {
       }
     });
     // Re-render with the new array
-    //set(nextMedList);
+
     const newProfile = { ...profile, schedule: nextSchedule };
     mainDispatch({ type: "addToSchedule", data: newProfile });
     try {
@@ -77,8 +68,6 @@ const MedList = (props) => {
       // }
       console.log(e);
     }
-
-    // setCurrentItemId(e.target.id);
   };
 
   useEffect(() => {
@@ -97,13 +86,11 @@ const MedList = (props) => {
         if (today === new Date(data.date).toDateString()) {
           //setProfile(data);
         } else {
-          //console.log("data==>", data);
           const newSchedule = data.schedule.map((med) => {
             med.taken = false;
             delete med._id;
             return med;
           });
-          //console.log("newSchedule==>", newSchedule);
           newProfile = {
             ...data,
             schedule: newSchedule,
@@ -141,79 +128,44 @@ const MedList = (props) => {
     // };
   }, []);
 
-  // useEffect(() => {
-  //   const checkItem = async () => {
-
-  //   };
-  //   checkItem();
-  //   // return () => {
-  //   //   abortController.abort();
-  //   // };
-  // }, [medList]);
-
-  // const setIntervalAsync = (fn, ms) => {
-  //   fn().then(() => {
-  //     setTimeout(() => setIntervalAsync(fn, ms), ms);
-  //   });
-  // };
-
-  // useEffect(() => {
-  //   async function renewTime() {
-  //     await delay(2000);
-  //     setControlTime(new Date());
-  //   }
-  //   renewTime();
-  // }, [controlTime]);
-
-  // setInterval(setControlTime(new Date().getTime()), 2000);
-
-  // useEffect(() => {
-  //   console.log('medList=>', medList);
-  // }, [medList]);
-
   // if (isLoading) return <LoadingDotsIcon />;
   if (!profile.schedule) return <>Loading...</>;
   return (
     <>
-      <div>
-        <div>
-          <div className="not-taken my-4 rounded-2xl bg-red-100 px-4 py-8">
-            {profile.schedule.length > 0 &&
-              profile.schedule.map((medListItem, idx) => {
-                if (medListItem.taken === false) {
-                  return (
-                    <Med
-                      medListItem={medListItem}
-                      handleCheck={handleCheck}
-                      key={medListItem._id}
-                      taken={medListItem.taken}
-                      id={medListItem._id}
-                      idx={idx}
-                    />
-                  );
-                }
-              })}
-          </div>
-          {""}
+      <div className="not-taken flex flex-grow flex-col gap-2 overflow-hidden px-4 py-8">
+        {profile.schedule.length > 0 &&
+          profile.schedule.map((medListItem, idx) => {
+            if (medListItem.taken === false) {
+              return (
+                <Med
+                  medListItem={medListItem}
+                  handleCheck={handleCheck}
+                  key={medListItem._id}
+                  taken={medListItem.taken}
+                  id={medListItem._id}
+                  idx={idx}
+                />
+              );
+            }
+          })}
+      </div>
 
-          <div className="taken my-2 rounded-2xl bg-gray-200 px-4 py-8">
-            {profile.schedule.length > 0 &&
-              profile.schedule.map((medListItem, idx) => {
-                if (medListItem.taken === true) {
-                  return (
-                    <Med
-                      medListItem={medListItem}
-                      handleCheck={handleCheck}
-                      key={medListItem._id}
-                      taken={medListItem.taken}
-                      id={medListItem._id}
-                      idx={idx}
-                    />
-                  );
-                }
-              })}
-          </div>
-        </div>
+      <div className="taken flex flex-grow flex-col gap-2 overflow-hidden px-4 py-8">
+        {profile.schedule.length > 0 &&
+          profile.schedule.map((medListItem, idx) => {
+            if (medListItem.taken === true) {
+              return (
+                <Med
+                  medListItem={medListItem}
+                  handleCheck={handleCheck}
+                  key={medListItem._id}
+                  taken={medListItem.taken}
+                  id={medListItem._id}
+                  idx={idx}
+                />
+              );
+            }
+          })}
       </div>
       <div>
         <button
@@ -266,10 +218,6 @@ function AddMedFormModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
   const mainState = useContext(StateContext);
   const mainDispatch = useContext(DispatchContext);
 
-  // const navigate = useNavigate();
-
-  const timesArray = [1, 2, 3, 4, 5];
-
   const generateTimePicker = (i) => {
     return (
       <div className="flex flex-col items-start space-y-2">
@@ -321,7 +269,7 @@ function AddMedFormModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (inputRef.current === null) return;
-    // setIsLoading(true);
+    setIsLoading(true);
     const slots = pickedTimes.slice(0, times);
     console.log("slots==>", slots);
 
@@ -389,14 +337,9 @@ function AddMedFormModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
                   how many times a day do you take this medication?
                 </option>
                 {/* the value='' makes above option invalid */}
-
-                {/* {timesArray.map((time) => (
-                  <option className="option" key={time}>{`${time}`}</option> //If the value attribute is not specified, the content will be passed as a value instead.
-                ))} */}
-
                 {_times(
                   (i) => (
-                    <option className="option" key={i}>{`${i}`}</option> //If the value attribute is not specified, the content will be passed as a value instead.
+                    <option className="option" key={i + 1}>{`${i + 1}`}</option> //If the value attribute is not specified, the content will be passed as a value instead.
                   ),
                   5,
                 )}
@@ -411,12 +354,11 @@ function AddMedFormModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
             </p>
             <div className="mt-2 grid grid-cols-2 gap-8 p-2 md:grid-cols-5 md:gap-10 md:space-y-0">
               {_times(generateTimePicker, 5)}
-              {/* {generateTimePicker(5)} */}
             </div>
           </div>
           <div className="flex w-full items-center justify-center">
             <button
-              // disabled={isLoading}
+              disabled={isLoading}
               type="submit"
               className="my-6 rounded-lg border border-orange bg-orange px-4 py-3 text-center text-white duration-200 hover:border-warm hover:bg-warm disabled:bg-blue-300"
             >
@@ -424,7 +366,6 @@ function AddMedFormModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
             </button>
           </div>
         </form>
-        {/* </div> */}
       </Modal>
     )
   );

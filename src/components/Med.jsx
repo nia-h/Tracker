@@ -1,28 +1,16 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 
 const Med = (props) => {
   const { med, time, _id, taken } = props.medListItem;
-  //   console.log('taken in Med==>', taken);
-  //   console.log('med _id==>', _id);
   const { idx, handleCheck } = props;
 
-  //   const [checked, setChecked] = useState(false);
-  //st date = new Date(Med.createdDate);
-  //   const dateFormatted = `${
-  //     date.getMonth() + 1
-  //   }/${date.getDate()}/${date.getFullYear()}`;
-
   return (
-    <>
-      {/* <input
-        id='default-checkbox'
-        type='checkbox'
-        value=''
-        className='w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 hidden rounded focus:ring-blue-500 focus:ring-2'
-      /> */}
-
+    <button
+      className={`flex w-[100%] cursor-pointer items-center overflow-hidden whitespace-nowrap rounded-[.25rem] border-none ${
+        taken ? "bg-gray-400" : "bg-pink-300"
+      } bg-purple-600 px-1 py-1.5 font-[1rem]`}
+    >
       <input
         onChange={(e) => {
           e.target.checked = e.target.checked;
@@ -33,12 +21,13 @@ const Med = (props) => {
         id={_id}
         name={idx}
         value={[time, med]}
+        checked={taken}
       />
       <label
         className={`${taken ? "line-through" : ""}`}
         htmlFor="medCheckbox"
       >{`${time} ${med}`}</label>
-    </>
+    </button>
   );
 };
 
