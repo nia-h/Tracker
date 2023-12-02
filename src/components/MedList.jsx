@@ -390,9 +390,16 @@ function AddMedFormModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
                 </option>
                 {/* the value='' makes above option invalid */}
 
-                {timesArray.map((time) => (
+                {/* {timesArray.map((time) => (
                   <option className="option" key={time}>{`${time}`}</option> //If the value attribute is not specified, the content will be passed as a value instead.
-                ))}
+                ))} */}
+
+                {_times(
+                  (i) => (
+                    <option className="option" key={i}>{`${i}`}</option> //If the value attribute is not specified, the content will be passed as a value instead.
+                  ),
+                  5,
+                )}
               </select>
             </div>
           </div>
