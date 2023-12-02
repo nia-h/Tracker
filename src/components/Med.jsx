@@ -24,15 +24,15 @@ const Med = (props) => {
       /> */}
 
       <input
-        checked={taken}
-        // onChange={handleCheck}
-
+        onChange={(e) => {
+          e.target.checked = e.target.checked;
+          handleCheck(e);
+        }}
         className={`h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500`}
         type="checkbox"
         id={_id}
         name={idx}
-        // value={[time, med]}
-        // onClick={handleCheck}
+        value={[time, med]}
       />
       <label
         className={`${taken ? "line-through" : ""}`}

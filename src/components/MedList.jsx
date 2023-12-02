@@ -19,6 +19,8 @@ import { redirect, useNavigate } from "react-router-dom";
 import debounce from "lodash/debounce";
 const dbBaseURL = import.meta.env.VITE_dbBaseURL;
 const medsBaseURL = import.meta.env.VITE_medsBaseURL;
+import times from "lodash/fp/times.js";
+const _times = times;
 
 const abortController = new AbortController();
 
@@ -26,7 +28,6 @@ const MedList = (props) => {
   const mainDispatch = useContext(DispatchContext);
   const mainState = useContext(StateContext);
   const [isAddMedModalOpen, setIsAddMedModalOpen] = useState(false);
-  const [isClosing, setIsClosing] = useState(false);
 
   const profile = mainState.profile;
   // const delay = ms =>
@@ -35,15 +36,14 @@ const MedList = (props) => {
   //   });
 
   const handleCheck = async (e) => {
-    e.preventDefault();
-    // e.target.checked = !e.target.checked;
+    //    // e.target.checked = !e.target.checked;
     // console.log('e.target.id==>', e.target.id);
     //const itemId = e.target.id;
-    const idx = e.target.name;
+    const id = e.target.id;
 
     const nextSchedule = profile.schedule.map((med, i) => {
       // console.log("i==>", i);
-      if (i !== +idx) {
+      if (med._id !== id) {
         // No change
         return med;
       } else {
@@ -55,6 +55,8 @@ const MedList = (props) => {
     });
     // Re-render with the new array
     //set(nextMedList);
+    const newProfile = { ...profile, schedule: nextSchedule };
+    mainDispatch({ type: "addToSchedule", data: newProfile });
     try {
       const url = dbBaseURL + "/checkItem";
       const { data } = await Axios.post(
@@ -67,7 +69,6 @@ const MedList = (props) => {
       );
       // console.log('response==>', response);
       // setProfile(data);
-      mainDispatch({ type: "addToSchedule", data });
     } catch (e) {
       // if (Axios.isCancel(e)) {
       //   console.log('Request canceled', e.message);
@@ -226,14 +227,13 @@ const MedList = (props) => {
         isOpen={isAddMedModalOpen}
         // submitFn={addEvent} //shorthand for onSubmit={newEvent => addEvent(newEvent)}
         closeFn={() => setIsAddMedModalOpen(false)}
-        isClosing={isClosing}
-        setIsClosing={setIsClosing}
       />
     </>
   );
 };
 
-function AddMedFormModal({ isOpen, isClosing, setIsClosing, closeFn }) {
+function AddMedFormModal({ isOpen, closeFn }) {
+  const [isClosing, setIsClosing] = useState(false);
   const prevIsOpen = useRef();
 
   useLayoutEffect(() => {
@@ -270,32 +270,31 @@ function AddMedFormModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
 
   const timesArray = [1, 2, 3, 4, 5];
 
-  const generateTimePickers = (n) => {
-    let content = [];
-    for (let i = 0; i < n; i++) {
-      content.push(
-        <div className="flex flex-col items-start space-y-2">
-          <p className="text-md font-normal text-secondary">Dose{i + 1}</p>
-          <input
-            id={`timepicker-${i}`}
-            key={`timepicker-${i}`}
-            onBlur={(e) => handleTimePicker(e, i)}
-            type="time"
-          ></input>
-        </div>,
-      );
-    }
+  const generateTimePicker = (i) => {
+    // let content = [];
+    // for (let i = 0; i < n; i++) {
+    // content.push(
     return (
-      <>
-        <p className="text-md mt-4 self-start font-medium text-primary">
-          Please select medication administration times
-        </p>
-        <div className="mt-2 grid grid-cols-2 gap-8 p-2 md:grid-cols-5 md:gap-10 md:space-y-0">
-          {content}
-        </div>
-      </>
+      <div className="flex flex-col items-start space-y-2">
+        <p className="text-md font-normal text-secondary">Dose</p>
+        <input
+          id={`timepicker-${i}`}
+          key={`timepicker-${i}`}
+          onBlur={(e) => handleTimePicker(e, i)}
+          type="time"
+        ></input>
+      </div>
     );
   };
+  console.log("isClosing==>", isClosing);
+  //   return (
+  //     <>
+  //       <div className="mt-2 grid grid-cols-2 gap-8 p-2 md:grid-cols-5 md:gap-10 md:space-y-0">
+  //         {content}
+  //       </div>
+  //     </>
+  //   );
+  // };
 
   const handleChange = async (event) => {
     const medName = event.target.value;
@@ -327,7 +326,7 @@ function AddMedFormModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (inputRef.current === null) return;
-    setIsLoading(true);
+    // setIsLoading(true);
     const slots = pickedTimes.slice(0, times);
     console.log("slots==>", slots);
 
@@ -337,6 +336,8 @@ function AddMedFormModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
       data.schedule.push({ med: selected, time: slot, taken: false });
     });
 
+    closeFn();
+
     try {
       const url = dbBaseURL + "/addToSchedule";
       const response = await Axios.post(url, data);
@@ -344,12 +345,13 @@ function AddMedFormModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
       //console.log('medArray==>', medArray);
       // console.log("response==>", response);
       mainDispatch({ type: "addToSchedule", data: response.data });
-      setIsLoading(false);
-      setIsClosing(true);
-      closeFn();
     } catch (e) {
       console.log("err==>", e);
     }
+    // setIsLoading(false);
+    // setIsClosing(true);
+
+    //   setIsClosing(false);
   };
 
   // useEffect(() => {
@@ -359,13 +361,14 @@ function AddMedFormModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
   // }, [pickedTimes]);
 
   return (
-    <Modal
-      isOpen={isOpen}
-      isClosing={isClosing}
-      setIsClosing={setIsClosing}
-      closeFn={closeFn}
-    >
-      <div className="flex flex-col items-start space-y-2 rounded-lg p-4">
+    (isOpen || isClosing) && (
+      <Modal
+        isOpen={isOpen}
+        isClosing={isClosing}
+        setIsClosing={setIsClosing}
+        closeFn={closeFn}
+      >
+        {/* <div className="flex flex-col items-start space-y-2 rounded-lg p-4"> */}
         <div className="text-lg font-medium text-primary">
           Add a new medication
         </div>
@@ -403,6 +406,7 @@ function AddMedFormModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
                   how many times a day do you take this medication?
                 </option>
                 {/* the value='' makes above option invalid */}
+
                 {timesArray.map((time) => (
                   <option className="optin" key={time}>{`${time}`}</option> //If the value attribute is not specified, the content will be passed as a value instead.
                 ))}
@@ -411,11 +415,16 @@ function AddMedFormModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
           </div>
 
           <div className="flex flex-col items-center justify-start">
-            {times > 0 && generateTimePickers(times)}
+            {/* {times > 0 && generateTimePickers(times)} */}
+            <p className="text-md mt-4 self-start font-medium text-primary">
+              Please select medication administration times
+            </p>
+            {_times(generateTimePicker, 5)}
+            {/* {generateTimePicker(5)} */}
           </div>
           <div className="flex w-full items-center justify-center">
             <button
-              disabled={isLoading}
+              // disabled={isLoading}
               type="submit"
               className="my-6 rounded-lg border border-orange bg-orange px-4 py-3 text-center text-white duration-200 hover:border-warm hover:bg-warm disabled:bg-blue-300"
             >
@@ -423,8 +432,9 @@ function AddMedFormModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
             </button>
           </div>
         </form>
-      </div>
-    </Modal>
+        {/* </div> */}
+      </Modal>
+    )
   );
 }
 
