@@ -12,10 +12,8 @@ import { StateContext, DispatchContext } from "../Contexts";
 // import LoadingDotsIcon from './LoadingDotsIcon';
 
 import Med from "./Med.jsx";
-import _, { set } from "lodash";
-// import CreateEntry from "./CreateEntry";
+import _ from "lodash";
 import { Modal } from "./Modal.jsx";
-import { redirect, useNavigate } from "react-router-dom";
 import debounce from "lodash/debounce";
 const dbBaseURL = import.meta.env.VITE_dbBaseURL;
 const medsBaseURL = import.meta.env.VITE_medsBaseURL;
