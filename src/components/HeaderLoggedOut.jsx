@@ -1,10 +1,10 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext } from "react";
 //import Page from "./Page"
-import Axios from 'axios';
+import Axios from "axios";
 const dbBaseURL = import.meta.env.VITE_dbBaseURL;
 // const medsBaseURL = import.meta.env.VITE_medsBaseURL;
-import { useNavigate } from 'react-router-dom';
-import { DispatchContext } from '../Contexts';
+import { useNavigate } from "react-router-dom";
+import { DispatchContext } from "../Contexts";
 
 const HeaderLoggedOut = () => {
   const [email, setEmail] = useState();
@@ -12,7 +12,7 @@ const HeaderLoggedOut = () => {
   const navigate = useNavigate();
   const mainDispatch = useContext(DispatchContext);
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const { data: user } = await Axios.post(`${dbBaseURL}/login`, {
@@ -20,55 +20,57 @@ const HeaderLoggedOut = () => {
         password,
       });
       if (user) {
-        console.log('user==>', user);
-        mainDispatch({ type: 'login', data: user });
+        console.log("user==>", user);
+        mainDispatch({ type: "login", data: user });
       } else {
-        console.log('Incorrect username / password.');
+        console.log("Incorrect username / password.");
       }
     } catch (e) {
-      console.log('err==>', e);
+      console.log("err==>", e);
     }
 
-    navigate('/');
+    navigate("/");
   };
 
   return (
     // <Page title="Welcome!" wide={true}>
-    <div className=''>
-      <div className=''>
+    <div className="">
+      <div className="">
         <form
-          className='flex flex-col items-center justify-center space-y-3 md:flex-row md:space-y-0 md:space-x-4 md:mb-24 md:justify-end'
-          onSubmit={handleSubmit}>
-          <div className=''>
-            <label htmlFor='email-register' className=''>
+          className="flex flex-col items-center justify-center space-y-3 md:mb-24 md:flex-row md:justify-end md:space-x-4 md:space-y-0"
+          onSubmit={handleSubmit}
+        >
+          <div className="">
+            <label htmlFor="email-register" className="">
               <small>Email</small>
             </label>
             <input
-              onChange={e => setEmail(e.target.value)}
-              id='email-register'
-              name='email'
-              className=''
-              type='text'
-              placeholder='you@example.com'
-              autoComplete='off'
+              onChange={(e) => setEmail(e.target.value)}
+              id="email-register"
+              name="email"
+              className=""
+              type="text"
+              placeholder="you@example.com"
+              autoComplete="off"
             />
           </div>
-          <div className='form-group'>
-            <label htmlFor='password-register' className=''>
+          <div className="form-group">
+            <label htmlFor="password-register" className="">
               <small>Password</small>
             </label>
             <input
-              onChange={e => setPassword(e.target.value)}
-              id='password-register'
-              name='password'
-              className=''
-              type='password'
-              placeholder='Create a password'
+              onChange={(e) => setPassword(e.target.value)}
+              id="password-register"
+              name="password"
+              className=""
+              type="password"
+              placeholder="Create a password"
             />
           </div>
           <button
-            type='submit'
-            className='w-1/4 transition-all duration-150 bg-secondary text-white  rounded-lg hover:border-t-8 hover:border-b-0 hover:bg-primary hover:shadow-lg'>
+            type="submit"
+            className="w-1/4 rounded-lg bg-secondary text-white transition-all  duration-150 hover:border-b-0 hover:border-t-8 hover:bg-primary hover:shadow-lg"
+          >
             Log In
           </button>
         </form>

@@ -8,6 +8,22 @@ import React, {
 } from "react";
 import Axios from "axios";
 
+import {
+  startOfWeek,
+  startOfMonth,
+  endOfWeek,
+  endOfMonth,
+  eachDayOfInterval,
+  isSameMonth,
+  isBefore,
+  endOfDay,
+  isToday,
+  subMonths,
+  addMonths,
+  isSameDay,
+  parse,
+} from "date-fns";
+
 import { StateContext, DispatchContext } from "../Contexts";
 // import LoadingDotsIcon from './LoadingDotsIcon';
 
@@ -22,14 +38,30 @@ const _times = times;
 
 const abortController = new AbortController();
 
-const MedList = (props) => {
+const MedList = () => {
   const mainDispatch = useContext(DispatchContext);
   const mainState = useContext(StateContext);
   const [isAddMedModalOpen, setIsAddMedModalOpen] = useState(false);
 
   const profile = mainState.profile;
 
-  const handleCheck = async (e) => {
+  const sortedSchedule = useMemo(() => {
+    const timeToNumber = (time) => parseFloat(time.replace(":", "."));
+
+    return [...Schedule].sort((a, b) => {
+      if (a.allDay && b.allDay) {
+        return 0;
+      } else if (a.allDay) {
+        return -1;
+      } else if (b.allDay) {
+        return 1;
+      } else {
+        return timeToNumber(a.startTime) - timeToNumber(b.startTime);
+      }
+    });
+  }, [Schedule]);
+
+  async function handleCheck(e) {
     const id = e.target.id;
 
     const nextSchedule = profile.schedule.map((med, i) => {
@@ -44,8 +76,8 @@ const MedList = (props) => {
     });
 
     const newProfile = { ...profile, schedule: nextSchedule };
+
     mainDispatch({ type: "addToSchedule", data: newProfile });
-    // Re-render with the new array
 
     try {
       const url = dbBaseURL + "/checkItem";
@@ -67,15 +99,13 @@ const MedList = (props) => {
       // }
       console.log(e);
     }
-  };
+  }
 
   useEffect(() => {
     // const ourRequest = Axios.CancelToken.source();
 
     const fetchMeds = async () => {
-      console.log("fetchMeds called");
       const today = new Date().toDateString();
-      console.log("today==>", today);
       try {
         let newProfile;
         let { data } = await Axios.get(
@@ -279,6 +309,7 @@ function AddMedFormModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
       data.schedule.push({ med: selected, time: slot, taken: false });
     });
 
+    console.log("data (payload)==>", data);
     closeFn();
 
     try {
