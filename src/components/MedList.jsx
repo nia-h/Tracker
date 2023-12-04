@@ -101,57 +101,78 @@ const MedList = () => {
     }
   }
 
+  const fetchMeds = async () => {
+    // const today = new Date().toDateString();
+    const today = Date.now();
+
+    try {
+      let regimen = await Axios.get(
+        `${dbBaseURL}/${mainState.user.userId}/regime`,
+        // { cancelToken: ourRequest.token }
+      );
+      // console.log("oldSchedule==>", data);
+      if (isSameDay(today, regimen.lastActiveAt)) {
+        //setProfile(data);
+      } else {
+        const prevSchedule = regimen.schedule[regimen.lastActiveAt];
+        // regimen.lastActiveAt = today;
+
+        const newSchedule = prevSchedule.map((course) => {
+          course.taken = false;
+          return course;
+        });
+
+        mainDispatch({ type: "updateSchedule", data: newSchedule });
+
+        // regimen.schedule.set(regimen.lastActiveAt, newSchedule);
+
+        // const newRegimen = await regimen.save();
+
+        /* {
+  "med": "abc",
+  "time": "11:12",
+  "taken": true,
+  "_id": "656d9bec931d3169f1aac129"
+},
+
+*/
+
+        // const newRegimen = data.schedule.map((med) => {
+        //   med.taken = false;
+        //   delete med._id;
+        //   return med;
+        // });
+        // newProfile = {
+        //   ...data,
+        //   schedule: newSchedule,
+        // };
+
+        //console.log("newProfile==>", newProfile);
+
+        await Axios.post(`${dbBaseURL}/${mainState.user.userId}/renewRegimen`, {
+          lastActiveAt: today,
+          newSchedule,
+        });
+      }
+
+      // { cancelToken: ourRequest.token }
+
+      // set(response.data);
+
+      // setIsLoading(false);
+    } catch (e) {
+      // if (Axios.isCancel(e)) {
+      //   console.log('Request canceled', e.message);
+      // } else {
+      //   console.log(e);
+      // }
+      console.log(e);
+    }
+  };
+
   useEffect(() => {
     // const ourRequest = Axios.CancelToken.source();
 
-    const fetchMeds = async () => {
-      const today = new Date().toDateString();
-      try {
-        let newProfile;
-        let { data } = await Axios.get(
-          `${dbBaseURL}/${mainState.user.userId}/schedule`,
-          // { cancelToken: ourRequest.token }
-        );
-        // console.log("oldSchedule==>", data);
-        if (today === new Date(data.date).toDateString()) {
-          //setProfile(data);
-        } else {
-          const newSchedule = data.schedule.map((med) => {
-            med.taken = false;
-            delete med._id;
-            return med;
-          });
-          newProfile = {
-            ...data,
-            schedule: newSchedule,
-          };
-          delete newProfile.date;
-          delete newProfile._id;
-          // delete newProfile.__v;
-
-          //console.log("newProfile==>", newProfile);
-
-          data = await Axios.post(
-            `${dbBaseURL}/${mainState.user.userId}/renewSchedule`,
-            newProfile,
-          );
-        }
-        mainDispatch({ type: "addToSchedule", data });
-
-        // { cancelToken: ourRequest.token }
-
-        // set(response.data);
-
-        // setIsLoading(false);
-      } catch (e) {
-        // if (Axios.isCancel(e)) {
-        //   console.log('Request canceled', e.message);
-        // } else {
-        //   console.log(e);
-        // }
-        console.log(e);
-      }
-    };
     fetchMeds();
     // return () => {
     //   ourRequest.cancel();

@@ -22,7 +22,7 @@ const App = () => {
     },
     // profile: {},
     schedule: [],
-    today: Date.now(),
+    // today: Date.now(),
   };
 
   const mainReducer = (draft, action) => {
@@ -35,8 +35,8 @@ const App = () => {
       case "logout":
         draft.loggedIn = false;
         return;
-      case "addToSchedule":
-        draft.profile = action.data;
+      case "updateSchedule":
+        draft.schedule = action.data;
         return;
     }
   };
