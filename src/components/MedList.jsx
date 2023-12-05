@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import React, {
+  useMemo,
   useEffect,
   useState,
   useContext,
@@ -8,21 +9,7 @@ import React, {
 } from "react";
 import Axios from "axios";
 
-import {
-  startOfWeek,
-  startOfMonth,
-  endOfWeek,
-  endOfMonth,
-  eachDayOfInterval,
-  isSameMonth,
-  isBefore,
-  endOfDay,
-  isToday,
-  subMonths,
-  addMonths,
-  isSameDay,
-  parse,
-} from "date-fns";
+import { isSameDay, parseISO } from "date-fns";
 
 import { StateContext, DispatchContext } from "../Contexts";
 // import LoadingDotsIcon from './LoadingDotsIcon';
@@ -41,30 +28,31 @@ const abortController = new AbortController();
 const MedList = () => {
   const mainDispatch = useContext(DispatchContext);
   const mainState = useContext(StateContext);
+  const schedule = mainState.schedule;
+  const today = mainState.today;
+  const userId = mainState.userId;
   const [isAddMedModalOpen, setIsAddMedModalOpen] = useState(false);
 
-  const profile = mainState.profile;
+  // const sortedSchedule = useMemo(() => {
+  //   const timeToNumber = (time) => parseFloat(time.replace(":", "."));
 
-  const sortedSchedule = useMemo(() => {
-    const timeToNumber = (time) => parseFloat(time.replace(":", "."));
-
-    return [...Schedule].sort((a, b) => {
-      if (a.allDay && b.allDay) {
-        return 0;
-      } else if (a.allDay) {
-        return -1;
-      } else if (b.allDay) {
-        return 1;
-      } else {
-        return timeToNumber(a.startTime) - timeToNumber(b.startTime);
-      }
-    });
-  }, [Schedule]);
+  //   return [...schedule].sort((a, b) => {
+  //     if (a.allDay && b.allDay) {
+  //       return 0;
+  //     } else if (a.allDay) {
+  //       return -1;
+  //     } else if (b.allDay) {
+  //       return 1;
+  //     } else {
+  //       return timeToNumber(a.startTime) - timeToNumber(b.startTime);
+  //     }
+  //   });
+  // }, [schedule]);
 
   async function handleCheck(e) {
     const id = e.target.id;
 
-    const nextSchedule = profile.schedule.map((med, i) => {
+    const nextSchedule = schedule.map((med, i) => {
       if (med._id !== id) {
         return med;
       } else {
@@ -75,16 +63,16 @@ const MedList = () => {
       }
     });
 
-    const newProfile = { ...profile, schedule: nextSchedule };
+    //const newProfile = { ...profile, schedule: nextSchedule };
 
-    mainDispatch({ type: "addToSchedule", data: newProfile });
+    mainDispatch({ type: "updateSchedule", data: nextSchedule });
 
     try {
       const url = dbBaseURL + "/checkItem";
       const { data } = await Axios.post(
         url,
         {
-          userId: mainState.user.userId,
+          userId: mainState.userId,
           nextSchedule,
         },
         // { signal: abortController.signal }
@@ -103,64 +91,39 @@ const MedList = () => {
 
   const fetchMeds = async () => {
     // const today = new Date().toDateString();
-    const today = Date.now();
+    //const today = Date.now();
 
     try {
-      let regimen = await Axios.get(
-        `${dbBaseURL}/${mainState.user.userId}/regime`,
+      let { data } = await Axios.get(
+        `${dbBaseURL}/${userId}/regimen`,
         // { cancelToken: ourRequest.token }
       );
-      // console.log("oldSchedule==>", data);
-      if (isSameDay(today, regimen.lastActiveAt)) {
-        //setProfile(data);
-      } else {
-        const prevSchedule = regimen.schedule[regimen.lastActiveAt];
-        // regimen.lastActiveAt = today;
+      if (data == null) return;
 
-        const newSchedule = prevSchedule.map((course) => {
+      let schedule = data.schedules[data.lastActiveDay];
+      if (!isSameDay(today, new Date(parseInt(data.lastActiveDay)))) {
+        //need to handle these on the backend
+        // console.log("oldSchedule==>", data);
+        //setProfile(data);
+
+        schedule = schedule.map((course) => {
           course.taken = false;
           return course;
         });
-
-        mainDispatch({ type: "updateSchedule", data: newSchedule });
-
-        // regimen.schedule.set(regimen.lastActiveAt, newSchedule);
-
-        // const newRegimen = await regimen.save();
-
-        /* {
-  "med": "abc",
-  "time": "11:12",
-  "taken": true,
-  "_id": "656d9bec931d3169f1aac129"
-},
-
-*/
-
-        // const newRegimen = data.schedule.map((med) => {
-        //   med.taken = false;
-        //   delete med._id;
-        //   return med;
-        // });
-        // newProfile = {
-        //   ...data,
-        //   schedule: newSchedule,
-        // };
-
-        //console.log("newProfile==>", newProfile);
-
-        await Axios.post(`${dbBaseURL}/${mainState.user.userId}/renewRegimen`, {
-          lastActiveAt: today,
-          newSchedule,
-        });
       }
+      console.log("schedule==>", schedule);
+      mainDispatch({ type: "updateSchedule", data: schedule });
 
+      await Axios.post(`${dbBaseURL}/${userId}/renewRegimen`, {
+        lastActiveDay: today,
+        schedule,
+      });
+    } catch (e) {
       // { cancelToken: ourRequest.token }
 
       // set(response.data);
 
       // setIsLoading(false);
-    } catch (e) {
       // if (Axios.isCancel(e)) {
       //   console.log('Request canceled', e.message);
       // } else {
@@ -180,52 +143,80 @@ const MedList = () => {
   }, []);
 
   // if (isLoading) return <LoadingDotsIcon />;
-  if (!profile.schedule) return <>Loading...</>;
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const currentDay = Date.now();
+
+      if (!isSameDay(today, currentDay)) {
+        mainDispatch({ type: "updateToday", data: currentDay });
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <>
-      <div className="not-taken flex flex-grow flex-col gap-2 overflow-hidden px-4 py-8">
-        {profile.schedule.length > 0 &&
-          profile.schedule.map((medListItem, idx) => {
-            if (medListItem.taken === false) {
-              return (
-                <Med
-                  medListItem={medListItem}
-                  handleCheck={handleCheck}
-                  key={medListItem._id}
-                  taken={medListItem.taken}
-                  id={medListItem._id}
-                  idx={idx}
-                />
-              );
+      {!schedule[0] ? (
+        <>
+          <button
+            onClick={() => setIsAddMedModalOpen(true)}
+            className="flex items-center justify-center space-x-3 rounded-lg border-2 border-secondary bg-pink-200 px-5 py-3 text-sm font-medium shadow-sm transition-all duration-150 hover:-translate-y-0.5 hover:bg-opacity-30 hover:shadow-lg"
+          >
+            Add a your first medication to start using Tracker
+          </button>
+        </>
+      ) : (
+        <>
+          <div className="not-taken flex flex-grow flex-col gap-2 overflow-hidden px-4 py-8">
+            {
+              // profile.schedule.length > 0 &&
+              schedule.map((medListItem, idx) => {
+                if (medListItem.taken === false) {
+                  return (
+                    <Med
+                      medListItem={medListItem}
+                      handleCheck={handleCheck}
+                      key={medListItem._id}
+                      taken={medListItem.taken}
+                      id={medListItem._id}
+                      idx={idx}
+                    />
+                  );
+                }
+              })
             }
-          })}
-      </div>
+          </div>
 
-      <div className="taken flex flex-grow flex-col gap-2 overflow-hidden px-4 py-8">
-        {profile.schedule.length > 0 &&
-          profile.schedule.map((medListItem, idx) => {
-            if (medListItem.taken === true) {
-              return (
-                <Med
-                  medListItem={medListItem}
-                  handleCheck={handleCheck}
-                  key={medListItem._id}
-                  taken={medListItem.taken}
-                  id={medListItem._id}
-                  idx={idx}
-                />
-              );
+          <div className="taken flex flex-grow flex-col gap-2 overflow-hidden px-4 py-8">
+            {
+              // profile.schedule.length > 0 &&
+              schedule.map((medListItem, idx) => {
+                if (medListItem.taken === true) {
+                  return (
+                    <Med
+                      medListItem={medListItem}
+                      handleCheck={handleCheck}
+                      key={medListItem._id}
+                      taken={medListItem.taken}
+                      id={medListItem._id}
+                      idx={idx}
+                    />
+                  );
+                }
+              })
             }
-          })}
-      </div>
-      <div>
-        <button
-          onClick={() => setIsAddMedModalOpen(true)}
-          className="flex items-center justify-center space-x-3 rounded-lg border-2 border-secondary bg-pink-200 px-5 py-3 text-sm font-medium shadow-sm transition-all duration-150 hover:-translate-y-0.5 hover:bg-opacity-30 hover:shadow-lg"
-        >
-          Add a new medication
-        </button>
-      </div>
+          </div>
+          <div>
+            <button
+              onClick={() => setIsAddMedModalOpen(true)}
+              className="flex items-center justify-center space-x-3 rounded-lg border-2 border-secondary bg-pink-200 px-5 py-3 text-sm font-medium shadow-sm transition-all duration-150 hover:-translate-y-0.5 hover:bg-opacity-30 hover:shadow-lg"
+            >
+              Add a new medication
+            </button>
+          </div>
+        </>
+      )}
       <AddMedFormModal
         isOpen={isAddMedModalOpen}
         // submitFn={addEvent} //shorthand for onSubmit={newEvent => addEvent(newEvent)}
@@ -260,15 +251,17 @@ function AddMedFormModal({ isOpen, closeFn }) {
 }
 
 function AddMedFormModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
-  const [medArray, setMedArray] = useState([]);
-  const [selected, setSelected] = useState();
+  const [medsDropdown, setMedsDropdown] = useState([]);
+  const [selectedMed, setSelectedMed] = useState();
   const [times, setTimes] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const inputRef = useRef();
   const [pickedTimes, setPickedTimes] = useState(new Array(5).fill(null));
-  const mainState = useContext(StateContext);
   const mainDispatch = useContext(DispatchContext);
-
+  const mainState = useContext(StateContext);
+  // const schedule = mainState.schedule;
+  const today = mainState.today;
+  const userId = mainState.userId;
   const generateTimePicker = (i) => {
     return (
       <div className="flex flex-col items-start space-y-2">
@@ -290,7 +283,7 @@ function AddMedFormModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
     );
   };
 
-  const handleChange = async (event) => {
+  const handleMedsDropdown = async (event) => {
     const medName = event.target.value;
 
     try {
@@ -298,18 +291,17 @@ function AddMedFormModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
         medsBaseURL +
         `/api/rxterms/v3/search?terms=${medName}&ef=STRENGTHS_AND_FORMS`;
       const { data } = await Axios.get(url);
-      setMedArray((e) => data[1]);
+      setMedsDropdown(() => data[1]);
     } catch (e) {
       console.log("err==>", e);
     }
   };
 
-  const handleSelected = (e) => {
-    setSelected(e.target.value);
+  const handleSelectedMed = (e) => {
+    setSelectedMed(e.target.value);
   };
 
   const handleTimePicker = (e, i) => {
-    console.log("i==>", i);
     setPickedTimes((prevState) => {
       const copy = [...prevState];
       copy[i] = e.target.value;
@@ -319,25 +311,29 @@ function AddMedFormModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (inputRef.current === null) return;
+    if (inputRef.current === null) return; // more validations needed
     setIsLoading(true);
     const slots = pickedTimes.slice(0, times);
-    console.log("slots==>", slots);
 
-    const data = { userId: mainState.user.userId, schedule: [] };
+    const schedule = [];
 
     slots.forEach((slot) => {
-      data.schedule.push({ med: selected, time: slot, taken: false });
+      schedule.push({ med: selectedMed, time: slot, taken: false });
     });
 
-    console.log("data (payload)==>", data);
     closeFn();
 
     try {
-      const url = dbBaseURL + "/addToSchedule";
-      const response = await Axios.post(url, data);
-
-      mainDispatch({ type: "addToSchedule", data: response.data });
+      const url = dbBaseURL + "/updateSchedule";
+      const { data } = await Axios.post(url, { userId, today, schedule });
+      console.log("data from response==>", data);
+      // console.log("typeof schedules==>", typeof data.schedules);
+      const courses = data.schedules[data.lastActiveDay];
+      console.log("retrieved schedule==>", courses); // will need to refactor backend to only send today's schedule
+      mainDispatch({
+        type: "updateSchedule",
+        data: courses,
+      });
     } catch (e) {
       console.log("err==>", e);
     }
@@ -365,12 +361,12 @@ function AddMedFormModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
                 className="h-10 w-full rounded-md border border-gray-300 px-3 pb-2 pt-4 text-sm placeholder-gray-400 placeholder:font-sans placeholder:font-light"
                 placeholder="name of medication"
                 id="medname"
-                list="medArray"
-                onChange={debounce(handleChange, 200)}
-                onBlur={(e) => handleSelected(e)}
+                list="medsDropdown"
+                onChange={debounce(handleMedsDropdown, 200)}
+                onBlur={(e) => handleSelectedMed(e)}
               />
-              <datalist id="medArray">
-                {medArray.map((med) => (
+              <datalist id="medsDropdown">
+                {medsDropdown.map((med) => (
                   <option value={med} key={med}>
                     {med}
                   </option>

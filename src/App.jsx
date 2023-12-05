@@ -16,13 +16,13 @@ const App = () => {
   const initialState = {
     loggedIn: Boolean(localStorage.getItem("medsTrackerToken")),
     // flashMessages: [],
-    user: {
-      token: localStorage.getItem("medsTrackerToken"),
-      userId: localStorage.getItem("medsTrackerUserId"),
-    },
+
+    token: localStorage.getItem("medsTrackerToken"),
+    userId: localStorage.getItem("medsTrackerUserId"),
+
     // profile: {},
     schedule: [],
-    // today: Date.now(),
+    today: Date.now(),
   };
 
   const mainReducer = (draft, action) => {
@@ -38,6 +38,9 @@ const App = () => {
       case "updateSchedule":
         draft.schedule = action.data;
         return;
+      case "updateToday":
+        draft.today = action.data;
+        return;
     }
   };
 
@@ -52,6 +55,10 @@ const App = () => {
       localStorage.removeItem("medsTrackerUserId");
     }
   }, [state.loggedIn]);
+
+  useEffect(() => {
+    console.log("schedule==>", state.schedule);
+  }, [state.schedule]);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-cyan-50">

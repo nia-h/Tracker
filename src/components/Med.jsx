@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 
 const Med = (props) => {
+  //style requires rewrite to keep fixed sized checkbox
   const { med, time, _id, taken } = props.medListItem;
   const { idx, handleCheck } = props;
 
