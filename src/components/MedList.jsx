@@ -33,21 +33,34 @@ const MedList = () => {
   const userId = mainState.userId;
   const [isAddMedModalOpen, setIsAddMedModalOpen] = useState(false);
 
-  // const sortedSchedule = useMemo(() => {
-  //   const timeToNumber = (time) => parseFloat(time.replace(":", "."));
+  const sortedSchedule = useMemo(() => {
+    const scheduleCopy = [...schedule];
+    scheduleCopy.push({ hr: "completed" });
 
-  //   return [...schedule].sort((a, b) => {
-  //     if (a.allDay && b.allDay) {
-  //       return 0;
-  //     } else if (a.allDay) {
-  //       return -1;
-  //     } else if (b.allDay) {
-  //       return 1;
-  //     } else {
-  //       return timeToNumber(a.startTime) - timeToNumber(b.startTime);
-  //     }
-  //   });
-  // }, [schedule]);
+    const timeToNumber = (time) => parseFloat(time.replace(":", "."));
+
+    return scheduleCopy.sort((a, b) => {
+      if (a.hr && !b.hr && b.taken) {
+        return -1;
+      } else if (a.hr && !b.hr && !b.taken) {
+        return 1;
+      } else if (!a.hr && b.hr && b.taken) {
+        return 1;
+      } else if (!a.hr && b.hr && !b.taken) {
+        return -1;
+      } else if (!a.taken && !a.hr && b.hr) {
+        return 1;
+      } else if (a.taken && b.taken) {
+        return 0;
+      } else if (a.taken) {
+        return 1;
+      } else if (b.taken) {
+        return -1;
+      } else {
+        return timeToNumber(a.time) - timeToNumber(b.time);
+      }
+    });
+  }, [schedule]);
 
   async function handleCheck(e) {
     const id = e.target.id;
@@ -100,6 +113,13 @@ const MedList = () => {
       );
       if (data == null) return;
 
+      // console.log(
+      //   "new Date(parseInt(data.lastActiveDay)===>",
+      //   new Date(parseInt(data.lastActiveDay)),
+      // );
+      // console.log("today==>", today);
+      // console.log(isSameDay(today, new Date(parseInt(data.lastActiveDay))));
+
       let schedule = data.schedules[data.lastActiveDay];
       if (!isSameDay(today, new Date(parseInt(data.lastActiveDay)))) {
         //need to handle these on the backend
@@ -110,14 +130,16 @@ const MedList = () => {
           course.taken = false;
           return course;
         });
+        const { renewed } = await Axios.post(
+          `${dbBaseURL}/${userId}/renewRegimen`,
+          {
+            lastActiveDay: today,
+            schedule,
+          },
+        );
+        console.log("renewed==> ", renewed);
       }
-      console.log("schedule==>", schedule);
       mainDispatch({ type: "updateSchedule", data: schedule });
-
-      await Axios.post(`${dbBaseURL}/${userId}/renewRegimen`, {
-        lastActiveDay: today,
-        schedule,
-      });
     } catch (e) {
       // { cancelToken: ourRequest.token }
 
@@ -157,7 +179,7 @@ const MedList = () => {
 
   return (
     <>
-      {!schedule[0] ? (
+      {!sortedSchedule[1] ? (
         <>
           <button
             onClick={() => setIsAddMedModalOpen(true)}
@@ -171,42 +193,29 @@ const MedList = () => {
           <div className="not-taken flex flex-grow flex-col gap-2 overflow-hidden px-4 py-8">
             {
               // profile.schedule.length > 0 &&
-              schedule.map((medListItem, idx) => {
-                if (medListItem.taken === false) {
+              sortedSchedule.map((course, idx) => {
+                if (course.med) {
                   return (
                     <Med
-                      medListItem={medListItem}
+                      course={course} // needs refactor to simplify props
                       handleCheck={handleCheck}
-                      key={medListItem._id}
-                      taken={medListItem.taken}
-                      id={medListItem._id}
+                      key={course._id}
+                      taken={course.taken}
+                      id={course._id}
                       idx={idx}
                     />
+                  );
+                } else {
+                  return (
+                    <div className="w-[20%] rounded-[100000] bg-purple-400 p-1">
+                      completed:{" "}
+                    </div>
                   );
                 }
               })
             }
           </div>
 
-          <div className="taken flex flex-grow flex-col gap-2 overflow-hidden px-4 py-8">
-            {
-              // profile.schedule.length > 0 &&
-              schedule.map((medListItem, idx) => {
-                if (medListItem.taken === true) {
-                  return (
-                    <Med
-                      medListItem={medListItem}
-                      handleCheck={handleCheck}
-                      key={medListItem._id}
-                      taken={medListItem.taken}
-                      id={medListItem._id}
-                      idx={idx}
-                    />
-                  );
-                }
-              })
-            }
-          </div>
           <div>
             <button
               onClick={() => setIsAddMedModalOpen(true)}

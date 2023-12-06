@@ -3,14 +3,14 @@ import React, { useEffect, useState } from "react";
 
 const Med = (props) => {
   //style requires rewrite to keep fixed sized checkbox
-  const { med, time, _id, taken } = props.medListItem;
+  const { med, time, _id, taken } = props.course;
   const { idx, handleCheck } = props;
 
   return (
     <button
       className={`flex w-[100%] cursor-pointer items-center overflow-hidden whitespace-nowrap rounded-[.25rem] border-none ${
         taken ? "bg-gray-400" : "bg-pink-300"
-      } bg-purple-600 px-1 py-1.5 font-[1rem]`}
+      }  px-1 py-1.5 font-[1rem]`}
     >
       <input
         onChange={(e) => {
