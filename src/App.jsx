@@ -11,6 +11,8 @@ import MedList from "./components/medList.jsx";
 import HeaderWrapper from "./components/HeaderWrapper";
 
 import { StateContext, DispatchContext } from "./Contexts";
+import { DBProvider } from "./context/dbContext.jsx";
+import { isSameDay, parseISO } from "date-fns";
 
 const App = () => {
   const initialState = {
@@ -19,10 +21,10 @@ const App = () => {
 
     token: localStorage.getItem("medsTrackerToken"),
     userId: localStorage.getItem("medsTrackerUserId"),
+    today: localStorage.getItem("medsTrackerToday"), // use case for useLocalStorage?
 
     // profile: {},
     schedule: [],
-    today: Date.now(),
   };
 
   const mainReducer = (draft, action) => {
@@ -31,6 +33,7 @@ const App = () => {
         draft.loggedIn = true;
         draft.token = action.data.token;
         draft.userId = action.data.userId;
+        draft.today = Date.now();
         return;
       case "logout":
         draft.loggedIn = false;
@@ -50,11 +53,27 @@ const App = () => {
     if (state.loggedIn) {
       localStorage.setItem("medsTrackerToken", state.token);
       localStorage.setItem("medsTrackerUserId", state.userId);
+      localStorage.setItem("medsTrackerToday", state.today);
     } else {
       localStorage.removeItem("medsTrackerToken");
       localStorage.removeItem("medsTrackerUserId");
+      localStorage.removeItem("medsTrackerToday");
     }
   }, [state.loggedIn]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const currentDay = Date.now();
+      if (!isSameDay(new Date(parseInt(state.today)), new Date(currentDay))) {
+        console.log("diff day detectected");
+        console.log("incoming==>", incoming);
+        console.log("control==>", control);
+        dispatch({ type: "updateToday", data: currentDay });
+        localStorage.setItem("medsTrackerToday", currentDay);
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     console.log("schedule==>", state.schedule);
@@ -65,16 +84,18 @@ const App = () => {
       <div className="m-3 min-w-[80%] space-y-10 rounded-3xl bg-white p-6 shadow-2xl">
         <StateContext.Provider value={state}>
           <DispatchContext.Provider value={dispatch}>
-            <BrowserRouter>
-              <HeaderWrapper />
-              <Routes>
-                {/* <Route path='/profile/:username/*' element={<Profile />} />  */}
-                <Route
-                  path="/"
-                  element={state.loggedIn ? <MedList /> : <HomeGuest />}
-                />
-              </Routes>
-            </BrowserRouter>
+            <DBProvider>
+              <BrowserRouter>
+                <HeaderWrapper />
+                <Routes>
+                  {/* <Route path='/profile/:username/*' element={<Profile />} />  */}
+                  <Route
+                    path="/"
+                    element={state.loggedIn ? <MedList /> : <HomeGuest />}
+                  />
+                </Routes>
+              </BrowserRouter>
+            </DBProvider>
           </DispatchContext.Provider>
         </StateContext.Provider>
       </div>

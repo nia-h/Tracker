@@ -18,10 +18,10 @@ import Med from "./Med.jsx";
 import _ from "lodash";
 import { Modal } from "./Modal.jsx";
 import debounce from "lodash/debounce";
-const dbBaseURL = import.meta.env.VITE_dbBaseURL;
 const medsBaseURL = import.meta.env.VITE_medsBaseURL;
 import times from "lodash/fp/times.js";
 const _times = times;
+import { useDB } from "../context/useDB.jsx";
 
 const abortController = new AbortController();
 
@@ -29,9 +29,11 @@ const MedList = () => {
   const mainDispatch = useContext(DispatchContext);
   const mainState = useContext(StateContext);
   const schedule = mainState.schedule;
+  console.log("schedule==>", schedule);
   const today = mainState.today;
   const userId = mainState.userId;
   const [isAddMedModalOpen, setIsAddMedModalOpen] = useState(false);
+  const { checkItem, fetchSchedule } = useDB();
 
   const sortedSchedule = useMemo(() => {
     const scheduleCopy = [...schedule];
@@ -76,106 +78,25 @@ const MedList = () => {
       }
     });
 
-    //const newProfile = { ...profile, schedule: nextSchedule };
-
     mainDispatch({ type: "updateSchedule", data: nextSchedule });
 
-    try {
-      const url = dbBaseURL + "/checkItem";
-      const { data } = await Axios.post(
-        url,
-        {
-          userId: mainState.userId,
-          nextSchedule,
-        },
-        // { signal: abortController.signal }
-      );
-      // console.log('response==>', response);
-      // setProfile(data);
-    } catch (e) {
-      // if (Axios.isCancel(e)) {
-      //   console.log('Request canceled', e.message);
-      // } else {
-      //   console.log(e);
-      // }
-      console.log(e);
-    }
+    await checkItem(nextSchedule);
   }
-
-  const fetchMeds = async () => {
-    // const today = new Date().toDateString();
-    //const today = Date.now();
-
-    try {
-      let { data } = await Axios.get(
-        `${dbBaseURL}/${userId}/regimen`,
-        // { cancelToken: ourRequest.token }
-      );
-      if (data == null) return;
-
-      // console.log(
-      //   "new Date(parseInt(data.lastActiveDay)===>",
-      //   new Date(parseInt(data.lastActiveDay)),
-      // );
-      // console.log("today==>", today);
-      // console.log(isSameDay(today, new Date(parseInt(data.lastActiveDay))));
-
-      let schedule = data.schedules[data.lastActiveDay];
-      if (!isSameDay(today, new Date(parseInt(data.lastActiveDay)))) {
-        //need to handle these on the backend
-        // console.log("oldSchedule==>", data);
-        //setProfile(data);
-
-        schedule = schedule.map((course) => {
-          course.taken = false;
-          return course;
-        });
-        const { renewed } = await Axios.post(
-          `${dbBaseURL}/${userId}/renewRegimen`,
-          {
-            lastActiveDay: today,
-            schedule,
-          },
-        );
-        console.log("renewed==> ", renewed);
-      }
-      mainDispatch({ type: "updateSchedule", data: schedule });
-    } catch (e) {
-      // { cancelToken: ourRequest.token }
-
-      // set(response.data);
-
-      // setIsLoading(false);
-      // if (Axios.isCancel(e)) {
-      //   console.log('Request canceled', e.message);
-      // } else {
-      //   console.log(e);
-      // }
-      console.log(e);
-    }
-  };
 
   useEffect(() => {
     // const ourRequest = Axios.CancelToken.source();
+    const fetch = async () => {
+      const schedule = await fetchSchedule(userId);
+      mainDispatch({ type: "updateSchedule", data: schedule });
+    };
+    fetch();
 
-    fetchMeds();
     // return () => {
     //   ourRequest.cancel();
     // };
   }, []);
 
   // if (isLoading) return <LoadingDotsIcon />;
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const currentDay = Date.now();
-
-      if (!isSameDay(today, currentDay)) {
-        mainDispatch({ type: "updateToday", data: currentDay });
-      }
-    }, 1000);
-    return () => clearInterval(interval);
-  }, []);
 
   return (
     <>
@@ -271,6 +192,8 @@ function AddMedFormModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
   // const schedule = mainState.schedule;
   const today = mainState.today;
   const userId = mainState.userId;
+  const { updateSchedule } = useDB();
+
   const generateTimePicker = (i) => {
     return (
       <div className="flex flex-col items-start space-y-2">
@@ -324,24 +247,19 @@ function AddMedFormModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
     setIsLoading(true);
     const slots = pickedTimes.slice(0, times);
 
-    const schedule = [];
+    const addedCourses = [];
 
     slots.forEach((slot) => {
-      schedule.push({ med: selectedMed, time: slot, taken: false });
+      addedCourses.push({ med: selectedMed, time: slot, taken: false });
     });
 
     closeFn();
 
     try {
-      const url = dbBaseURL + "/updateSchedule";
-      const { data } = await Axios.post(url, { userId, today, schedule });
-      console.log("data from response==>", data);
-      // console.log("typeof schedules==>", typeof data.schedules);
-      const courses = data.schedules[data.lastActiveDay];
-      console.log("retrieved schedule==>", courses); // will need to refactor backend to only send today's schedule
+      const data = await updateSchedule(userId, addedCourses);
       mainDispatch({
         type: "updateSchedule",
-        data: courses,
+        data,
       });
     } catch (e) {
       console.log("err==>", e);
