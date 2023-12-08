@@ -39,16 +39,28 @@ export function DBProvider({ children }) {
     }
   }
 
-  async function fetchSchedule() {
+  async function fetchSchedule(abortSignal) {
     try {
       const url = dbBaseURL + `/${userId}/fetchSchedule`;
-      const { data } = await Axios.get(url);
+      const { data } = await Axios.get(url, {
+        signal: abortSignal,
+      });
 
       return data;
     } catch (e) {
-      console.log(e);
+      console.log("error.name==>", e.name);
     }
   }
+
+  // async function fetchSchedule() {
+  //   try {
+  //     const url = dbBaseURL + `/${userId}/fetchSchedule`;
+  //     const { data } = await Axios.get(url);
+  //     return data;
+  //   } catch (e) {
+  //     console.log("error.name==>", e.name);
+  //   }
+  // }
 
   return (
     <dbContext.Provider value={{ checkItem, fetchSchedule, updateSchedule }}>

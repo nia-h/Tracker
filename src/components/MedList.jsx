@@ -21,8 +21,6 @@ import times from "lodash/fp/times.js";
 const _times = times;
 import { useDB } from "../context/useDB.jsx";
 
-const abortController = new AbortController();
-
 const MedList = () => {
   const mainDispatch = useContext(DispatchContext);
   const mainState = useContext(StateContext);
@@ -82,16 +80,22 @@ const MedList = () => {
   }
 
   useEffect(() => {
-    // const ourRequest = Axios.CancelToken.source();
+    const controller = new AbortController();
+    const abortSignal = controller.signal;
+
     const fetch = async () => {
-      const schedule = await fetchSchedule(userId);
-      mainDispatch({ type: "updateSchedule", data: schedule });
+      try {
+        const schedule = await fetchSchedule(abortSignal);
+        // console.log("controller.signal:");
+        // console.dir(controller.signal);
+        mainDispatch({ type: "updateSchedule", data: schedule });
+      } catch (e) {
+        console.log(e);
+      }
     };
     fetch();
 
-    // return () => {
-    //   ourRequest.cancel();
-    // };
+    return () => controller.abort();
   }, []);
 
   // if (isLoading) return <LoadingDotsIcon />;

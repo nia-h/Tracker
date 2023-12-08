@@ -22,8 +22,6 @@ const App = () => {
     token: localStorage.getItem("medsTrackerToken"),
     userId: localStorage.getItem("medsTrackerUserId"),
     today: localStorage.getItem("medsTrackerToday"), // use case for useLocalStorage?
-
-    // profile: {},
     schedule: [],
   };
 
