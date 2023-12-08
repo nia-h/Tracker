@@ -17,6 +17,8 @@ import _ from "lodash";
 import { Modal } from "./Modal.jsx";
 import debounce from "lodash/debounce";
 const medsBaseURL = import.meta.env.VITE_medsBaseURL;
+const dbBaseURL = import.meta.env.VITE_dbBaseURL;
+
 import times from "lodash/fp/times.js";
 const _times = times;
 import { useDB } from "../context/useDB.jsx";
@@ -29,7 +31,7 @@ const MedList = () => {
   const today = mainState.today;
   const userId = mainState.userId;
   const [isAddMedModalOpen, setIsAddMedModalOpen] = useState(false);
-  const { checkItem, fetchSchedule } = useDB();
+  const { checkItem } = useDB();
 
   const sortedSchedule = useMemo(() => {
     const scheduleCopy = [...schedule];
@@ -83,17 +85,22 @@ const MedList = () => {
     const controller = new AbortController();
     const abortSignal = controller.signal;
 
-    const fetch = async () => {
+    const fetchSchedule = async () => {
       try {
-        const schedule = await fetchSchedule(abortSignal);
-        // console.log("controller.signal:");
-        // console.dir(controller.signal);
-        mainDispatch({ type: "updateSchedule", data: schedule });
+        const url = dbBaseURL + `/${userId}/fetchSchedule`;
+        const { data } = await Axios.get(url, {
+          signal: abortSignal,
+        });
+
+        mainDispatch({ type: "updateSchedule", data });
+        //   } catch (e) {
+        //     console.log("error.name==>", e.name);
+        //   }
       } catch (e) {
-        console.log(e);
+        console.log("error==>", e);
       }
     };
-    fetch();
+    fetchSchedule();
 
     return () => controller.abort();
   }, []);
