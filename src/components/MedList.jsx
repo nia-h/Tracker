@@ -9,8 +9,6 @@ import React, {
 } from "react";
 import Axios from "axios";
 
-import { isSameDay, parseISO } from "date-fns";
-
 import { StateContext, DispatchContext } from "../Contexts";
 // import LoadingDotsIcon from './LoadingDotsIcon';
 

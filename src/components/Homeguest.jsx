@@ -8,7 +8,7 @@ function HomeGuest() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const mainState = useContext(StateContext);
-  const today = mainState.today;
+  // const today = mainState.today;
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -16,7 +16,7 @@ function HomeGuest() {
       const { data: user } = await Axios.post(`${dbBaseURL}/register`, {
         email,
         password,
-        today,
+        // today,
       });
       // console.log("user==>", user);
       if (user) {

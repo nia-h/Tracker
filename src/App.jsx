@@ -33,7 +33,7 @@ const App = () => {
         draft.loggedIn = true;
         draft.token = action.data.token;
         draft.userId = action.data.userId;
-        draft.today = Date.now();
+        draft.today = new Date().toDateString();
         return;
       case "logout":
         draft.loggedIn = false;
@@ -62,14 +62,15 @@ const App = () => {
   }, [state.loggedIn]);
 
   useEffect(() => {
+    //midnight date change detecting
     const interval = setInterval(() => {
-      const currentDay = Date.now();
-      if (!isSameDay(new Date(parseInt(state.today)), new Date(currentDay))) {
+      if (!state.loggedIn) return;
+      const currentDay = new Date();
+      // if (!isSameDay(new Date(parseInt(state.today)), new Date(currentDay))) {
+      if (!isSameDay(new Date(state.today), currentDay)) {
         console.log("diff day detectected");
-        console.log("incoming==>", incoming);
-        console.log("control==>", control);
-        dispatch({ type: "updateToday", data: currentDay });
-        localStorage.setItem("medsTrackerToday", currentDay);
+        dispatch({ type: "updateToday", data: currentDay.toDateString() });
+        localStorage.setItem("medsTrackerToday", currentDay.toDateString());
       }
     }, 1000);
     return () => clearInterval(interval);
