@@ -9,11 +9,11 @@ function HeaderWrapper(props) {
 
   return (
     <>
-      <div class="flex items-center justify-between">
+      <div className="flex items-center justify-between">
         {/* <!-- Flex Container For Logo/Menu --> */}
-        <div class="flex items-center space-x-20">
+        <div className="flex items-center space-x-20">
           {/* <!-- Logo --> */}
-          <img src="/public/images/logo.png" width="400" alt="" />
+          <img src="/images/logo.png" width="400" alt="" />
         </div>
         {/* 
         <!-- Right Buttons Menu --> */}

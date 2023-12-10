@@ -24,3 +24,4 @@ dist-ssr
 *.sw?
 note.js
 1.js
+.env
