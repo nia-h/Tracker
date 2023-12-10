@@ -52,7 +52,7 @@ function HomeGuest() {
           <div class="mx-auto mb-4 -translate-x-14 md:w-[32rem] lg:mb-0 lg:w-1/2">
             <img
               className="h-[auto] max-w-[100%]"
-              src="/public/images/Medicine-amico.svg"
+              src="/images/Medicine-amico.svg"
               alt=""
               height="1200"
               width="1200"
