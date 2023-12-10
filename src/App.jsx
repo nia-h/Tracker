@@ -62,14 +62,19 @@ const App = () => {
   useEffect(() => {
     //midnight date change detecting
     const interval = setInterval(() => {
-      if (!state.loggedIn) return;
+      // console.log("state.today==>", state.today);
       const currentDay = new Date();
+
+      if (!state.loggedIn) return;
+
+      if (isSameDay(new Date(state.today), currentDay)) return;
+
       // if (!isSameDay(new Date(parseInt(state.today)), new Date(currentDay))) {
-      if (!isSameDay(new Date(state.today), currentDay)) {
-        console.log("diff day detectected");
-        dispatch({ type: "updateToday", data: currentDay.toDateString() });
-        localStorage.setItem("medsTrackerToday", currentDay.toDateString());
-      }
+      //if (!isSameDay(new Date(state.today), currentDay)) {
+      console.log("diff day detectected");
+      dispatch({ type: "updateToday", data: currentDay.toDateString() });
+      localStorage.setItem("medsTrackerToday", currentDay.toDateString());
+      // }
     }, 1000);
     return () => clearInterval(interval);
   }, []);
@@ -79,26 +84,27 @@ const App = () => {
   }, [state.schedule]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-cyan-50">
-      <div className="m-3 min-w-[80%] space-y-10 rounded-3xl bg-white p-6 shadow-2xl">
-        <StateContext.Provider value={state}>
-          <DispatchContext.Provider value={dispatch}>
-            <DBProvider>
-              <BrowserRouter>
-                <HeaderWrapper />
-                <Routes>
-                  {/* <Route path='/profile/:username/*' element={<Profile />} />  */}
-                  <Route
-                    path="/"
-                    element={state.loggedIn ? <MedList /> : <HomeGuest />}
-                  />
-                </Routes>
-              </BrowserRouter>
-            </DBProvider>
-          </DispatchContext.Provider>
-        </StateContext.Provider>
-      </div>
+    // <div className="flex  items-center justify-center bg-cyan-50">
+    <div className="min-h-screen items-center justify-center space-y-10 bg-cyan-50 p-6">
+      {/* <div className="m-3 min-w-[80%] items-center justify-center space-y-10 rounded-3xl bg-white shadow-2xl"> */}
+      <StateContext.Provider value={state}>
+        <DispatchContext.Provider value={dispatch}>
+          <DBProvider>
+            <BrowserRouter>
+              <HeaderWrapper />
+              <Routes>
+                {/* <Route path='/profile/:username/*' element={<Profile />} />  */}
+                <Route
+                  path="/"
+                  element={state.loggedIn ? <MedList /> : <HomeGuest />}
+                />
+              </Routes>
+            </BrowserRouter>
+          </DBProvider>
+        </DispatchContext.Provider>
+      </StateContext.Provider>
     </div>
+    // </div>
   );
 };
 

@@ -120,30 +120,27 @@ const MedList = () => {
         </>
       ) : (
         <>
-          <div className="not-taken flex flex-grow flex-col gap-2 overflow-hidden px-4 py-8">
-            {
-              // profile.schedule.length > 0 &&
-              sortedSchedule.map((course, idx) => {
-                if (course.med) {
-                  return (
-                    <Med
-                      course={course} // needs refactor to simplify props
-                      handleCheck={handleCheck}
-                      key={course._id}
-                      taken={course.taken}
-                      id={course._id}
-                      idx={idx}
-                    />
-                  );
-                } else {
-                  return (
-                    <div className="w-[20%] rounded-[100000] bg-purple-400 p-1">
-                      completed:{" "}
-                    </div>
-                  );
-                }
-              })
-            }
+          <div className="schedule mx-[auto] flex flex-col gap-2 overflow-hidden bg-green-300 px-4 py-8 md:w-[90%]">
+            {sortedSchedule.map((course, idx) => {
+              if (course.med) {
+                return (
+                  <Med
+                    course={course} // needs refactor to simplify props
+                    handleCheck={handleCheck}
+                    key={course._id}
+                    taken={course.taken}
+                    id={course._id}
+                    idx={idx}
+                  />
+                );
+              } else {
+                return (
+                  <div className="self-start rounded-[1000px] bg-purple-400 px-2.5 py-1 font-[1rem]">
+                    completed:{" "}
+                  </div>
+                );
+              }
+            })}
           </div>
 
           <div>
