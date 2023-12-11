@@ -16,7 +16,7 @@ const HeaderLoggedOut = () => {
         type="submit"
         className="rounded-full bg-[var(--accent)] px-6 py-3 font-bold text-white transition-all duration-150  hover:opacity-70 hover:shadow-lg"
       >
-        Log In
+        Sign In
       </button>
       <LogInModal
         isOpen={isLogInModalOpen}
@@ -64,6 +64,10 @@ function LogInModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
   const navigate = useNavigate();
   const mainDispatch = useContext(DispatchContext);
 
+  const github = () => {
+    window.open(`${dbBaseURL}/auth/github`, "_self");
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     // if (inputRef.current === null) return;
@@ -97,44 +101,68 @@ function LogInModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
         setIsClosing={setIsClosing}
         closeFn={closeFn}
       >
-        <form
-          className="flex flex-col items-center justify-center space-y-3 md:mb-24 md:flex-row md:justify-end md:space-x-4 md:space-y-0"
-          onSubmit={handleSubmit}
-        >
-          <div className="">
-            <label htmlFor="email-register" className="">
-              <small>Email</small>
-            </label>
-            <input
-              onChange={(e) => setEmail(e.target.value)}
-              id="email-register"
-              name="email"
-              className=""
-              type="text"
-              placeholder="you@example.com"
-              autoComplete="off"
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="password-register" className="">
-              <small>Password</small>
-            </label>
-            <input
-              onChange={(e) => setPassword(e.target.value)}
-              id="password-register"
-              name="password"
-              className=""
-              type="password"
-              placeholder="Create a password"
-            />
-          </div>
-          <button
-            type="submit"
-            className="w-1/4 rounded-lg bg-secondary text-white transition-all  duration-150 hover:border-b-0 hover:border-t-8 hover:bg-primary hover:shadow-lg"
+        <div className="sign-in-view flex flex-col content-center items-center">
+          <div className="title">Sign In</div>
+          <form
+            className="flex flex-col items-center justify-center space-y-3 md:mb-8 md:flex-row md:justify-end md:space-x-4 md:space-y-0"
+            onSubmit={handleSubmit}
           >
-            Log In
-          </button>
-        </form>
+            <div className="">
+              <label htmlFor="email-register" className="">
+                <small>Email</small>
+              </label>
+              <input
+                onChange={(e) => setEmail(e.target.value)}
+                id="email-register"
+                name="email"
+                className=""
+                type="text"
+                placeholder="you@example.com"
+                autoComplete="off"
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="password-register" className="">
+                <small>Password</small>
+              </label>
+              <input
+                onChange={(e) => setPassword(e.target.value)}
+                id="password-register"
+                name="password"
+                className=""
+                type="password"
+                placeholder="Create a password"
+              />
+            </div>
+            <button
+              type="submit"
+              className="w-1/4 rounded-lg bg-secondary text-white transition-all  duration-150 hover:border-b-0 hover:border-t-8 hover:bg-primary hover:shadow-lg"
+            >
+              Sign In
+            </button>
+          </form>
+          <div className="form-header mx-[auto] flex w-[90%] flex-col content-center items-center">
+            <div className="sign-in-divider">
+              <span>or</span>
+            </div>
+            <div className="social-buttons mb-[10px] flex flex-col content-center items-center">
+              <div
+                onClick={github}
+                className="github social-button flex h-[48px] w-[100%] cursor-pointer flex-row items-center rounded-[24px] bg-[#fff] px-2 py-[16px] shadow-social-button-shadow"
+              >
+                <div className="github-image">
+                  <img
+                    className=" flex h-[40px] items-center pr-[16px]"
+                    src="/images/github-mark.svg"
+                  />
+                </div>
+                <span className="social-button-text github-button-text flex h-[40px] items-center text-[14px] font-[500] text-[rgba(0,0,0,.54)]">
+                  Sign in with github
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
       </Modal>
     )
   );

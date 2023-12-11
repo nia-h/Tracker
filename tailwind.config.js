@@ -3,6 +3,10 @@ export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
+      boxShadow: {
+        "social-button-shadow":
+          "0 0 2px 0 rgba(0, 0, 0, 0.12),0 2px 2px 0 rgba(0, 0, 0, 0.24), 0 0 0 0 rgba(0, 0, 0, 0.12), 0 0 0 0 rgba(0, 0, 0, 0.24)",
+      },
       colors: {
         primary: "#14471E",
         secondary: "#68904D",
