@@ -7,6 +7,8 @@ import { DispatchContext, StateContext } from "../Contexts";
 function HeaderWrapper(props) {
   const mainState = useContext(StateContext);
 
+  console.log("mainState==>", mainState);
+
   return (
     <>
       <div className="flex items-center justify-between">
@@ -17,7 +19,11 @@ function HeaderWrapper(props) {
         </div>
         {/* 
         <!-- Right Buttons Menu --> */}
-        {mainState.loggedIn ? <HeaderLoggedIn /> : <HeaderLoggedOut />}
+        {mainState.loggedIn || mainState.socialUserObj ? (
+          <HeaderLoggedIn />
+        ) : (
+          <HeaderLoggedOut />
+        )}
         {}
       </div>
 

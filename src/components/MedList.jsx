@@ -30,6 +30,7 @@ const MedList = () => {
   console.log("schedule==>", schedule);
   const today = mainState.today;
   const userId = mainState.userId;
+  const socialId = mainState.socialId;
   const [isAddMedModalOpen, setIsAddMedModalOpen] = useState(false);
   const { checkItem } = useDB();
 
@@ -100,10 +101,27 @@ const MedList = () => {
         console.log("error==>", e);
       }
     };
-    fetchSchedule();
+
+    // const handleSocialUserLogin = async () => {
+    //       try {
+    //         const url = dbBaseURL + `/${socialId}/socialUserLogin`;
+    //         const { data } = await Axios.get(url, {
+    //           signal: abortSignal,
+    //         });
+
+    //         mainDispatch({ type: "socialUser_id", data: data.user });
+    //         //   } catch (e) {
+    //         //     console.log("error.name==>", e.name);
+    //         //   }
+    //       } catch (e) {
+    //         console.log("error==>", e);
+    //       }
+    //     };
+    // if (mainState.loggedIn || mainState.socialUserObj) fetchSchedule();
+    if (mainState.userId) fetchSchedule();
 
     return () => controller.abort();
-  }, []);
+  }, [mainState.userId]);
 
   // if (isLoading) return <LoadingDotsIcon />;
 

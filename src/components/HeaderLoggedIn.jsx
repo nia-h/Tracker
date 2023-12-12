@@ -12,7 +12,11 @@ function HeaderLoggedIn(props) {
   const mainState = useContext(StateContext);
 
   function handleLogout() {
-    mainDispatch({ type: "logout" });
+    if (mainState.loggedin) {
+      mainDispatch({ type: "logout" });
+    } else if (mainState.socialUserObj) {
+      window.open("http://localhost:8081/auth/logout", "_self");
+    }
   }
 
   // function handleSearchIcon(e) {
