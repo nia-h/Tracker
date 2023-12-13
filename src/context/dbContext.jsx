@@ -16,6 +16,7 @@ export function DBProvider({ children }) {
 
   async function updateSchedule(userId, addedCourses) {
     console.log("hit updateSchedule context call");
+    console.log("userId from context call=====>", userId);
     try {
       const url = dbBaseURL + "/updateSchedule";
       const { data } = await Axios.post(url, { userId, addedCourses });

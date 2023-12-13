@@ -27,7 +27,7 @@ const MedList = () => {
   const mainDispatch = useContext(DispatchContext);
   const mainState = useContext(StateContext);
   const schedule = mainState.schedule;
-  console.log("schedule==>", schedule);
+
   const today = mainState.today;
   const userId = mainState.userId;
   const socialId = mainState.socialId;
@@ -102,22 +102,6 @@ const MedList = () => {
       }
     };
 
-    // const handleSocialUserLogin = async () => {
-    //       try {
-    //         const url = dbBaseURL + `/${socialId}/socialUserLogin`;
-    //         const { data } = await Axios.get(url, {
-    //           signal: abortSignal,
-    //         });
-
-    //         mainDispatch({ type: "socialUser_id", data: data.user });
-    //         //   } catch (e) {
-    //         //     console.log("error.name==>", e.name);
-    //         //   }
-    //       } catch (e) {
-    //         console.log("error==>", e);
-    //       }
-    //     };
-    // if (mainState.loggedIn || mainState.socialUserObj) fetchSchedule();
     if (mainState.userId) fetchSchedule();
 
     return () => controller.abort();
@@ -216,6 +200,7 @@ function AddMedFormModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
   // const schedule = mainState.schedule;
   const today = mainState.today;
   const userId = mainState.userId;
+
   const { updateSchedule } = useDB();
 
   const generateTimePicker = (i) => {
