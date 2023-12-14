@@ -8,9 +8,9 @@ const Med = (props) => {
 
   return (
     <button
-      className={`flex w-[100%] cursor-pointer items-start overflow-hidden whitespace-normal rounded-[.25rem] border-none text-sm md:whitespace-nowrap md:text-base ${
-        taken ? "bg-gray-400" : "bg-pink-300"
-      }  px-1 py-1.5 font-[1rem]`}
+      className={`flex w-[100%] cursor-pointer items-start overflow-hidden ${
+        taken ? "bg-subtitle  text-white" : "bg-pink-200  text-primaryBlue"
+      } whitespace-normal rounded-[.25rem] border-none px-1 py-1.5  font-[1rem]`}
     >
       <input
         onChange={(e) => {

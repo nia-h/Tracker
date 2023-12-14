@@ -1,14 +1,10 @@
-import React, { useContext, useState, useEffect } from "react";
-//import Page from "./Page"
+import React, { useState } from "react";
 import Axios from "axios";
 const dbBaseURL = import.meta.env.VITE_dbBaseURL;
-import { StateContext, DispatchContext } from "../Contexts";
 
 function HomeGuest() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const mainState = useContext(StateContext);
-  // const today = mainState.today;
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -16,9 +12,8 @@ function HomeGuest() {
       const { data } = await Axios.post(`${dbBaseURL}/register`, {
         email,
         password,
-        // today,
       });
-      // console.log("user==>", user);
+
       if (data.user) {
         setEmail("");
         setPassword("");
@@ -27,8 +22,6 @@ function HomeGuest() {
       console.log("err==>", e);
     }
   }
-
-  const [user, setUser] = useState(null);
 
   return (
     <>
@@ -40,11 +33,11 @@ function HomeGuest() {
             <h1 className="text-center text-5xl font-bold lg:max-w-md lg:text-left lg:text-6xl">
               Your trusted medication tracker
             </h1>
-            <p className="text-center text-2xl text-gray-400 lg:max-w-md lg:text-left">
+            <p className="text-center text-2xl text-subtitle lg:max-w-md lg:text-left">
               Keeping a perfect medication regimen effortlessly
             </p>
             <div className="mx-auto lg:mx-0">
-              <button className="rounded-full bg-[var(--accent)] px-10 py-5 text-2xl font-bold text-white hover:opacity-70 lg:py-4">
+              <button className="rounded-full px-10 py-5 text-2xl font-bold text-white hover:opacity-70 lg:py-4">
                 sign up
               </button>
             </div>
@@ -63,13 +56,13 @@ function HomeGuest() {
         </div>
       </section>
 
-      <div className="bg-blue-300">
+      {/* <div className="bg-blue-300">
         <div className="col-lg-7 py-md-5 py-3">
           <h1 className="display-3">Meds Tracker</h1>
           <p className="lead text-muted"></p>
         </div>
         {/* <a href="https://storyset.com/work">Work illustrations by Storyset</a> */}
-        <div className="col-lg-5 pl-lg-5 py-lg-5 pb-3">
+      {/* <div className="col-lg-5 pl-lg-5 py-lg-5 pb-3">
           <form onSubmit={handleSubmit}>
             <div className="form-group"></div>
             <div className="form-group">
@@ -106,7 +99,7 @@ function HomeGuest() {
             </button>
           </form>
         </div>
-      </div>
+      </div> */}
     </>
   );
 }

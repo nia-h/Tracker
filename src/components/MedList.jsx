@@ -22,11 +22,13 @@ const dbBaseURL = import.meta.env.VITE_dbBaseURL;
 import times from "lodash/fp/times.js";
 const _times = times;
 import { useDB } from "../context/useDB.jsx";
+import LoadingDots from "./LoadingDots.jsx";
 
 const MedList = () => {
   const mainDispatch = useContext(DispatchContext);
   const mainState = useContext(StateContext);
   const schedule = mainState.schedule;
+  const [isLoading, setIsLoading] = useState(true);
 
   const today = mainState.today;
   const userId = mainState.userId;
@@ -92,11 +94,8 @@ const MedList = () => {
         const { data } = await Axios.get(url, {
           signal: abortSignal,
         });
-
         mainDispatch({ type: "updateSchedule", data });
-        //   } catch (e) {
-        //     console.log("error.name==>", e.name);
-        //   }
+        setIsLoading(false);
       } catch (e) {
         console.log("error==>", e);
       }
@@ -107,22 +106,38 @@ const MedList = () => {
     return () => controller.abort();
   }, [mainState.userId]);
 
-  // if (isLoading) return <LoadingDotsIcon />;
+  if (isLoading) return <LoadingDots />;
 
   return (
     <>
       {!sortedSchedule[1] ? (
         <>
-          <button
+          <div
             onClick={() => setIsAddMedModalOpen(true)}
-            className="flex items-center justify-center space-x-3 rounded-lg border-2 border-secondary bg-pink-200 px-5 py-3 text-sm font-medium shadow-sm transition-all duration-150 hover:-translate-y-0.5 hover:bg-opacity-30 hover:shadow-lg"
+            className="cursor-pointer self-start font-bold text-accent hover:text-subtitle"
           >
-            Add a your first medication to start using Tracker
-          </button>
+            + Add a your first medication to start using Tracker
+          </div>
         </>
       ) : (
         <>
-          <div className="schedule mx-[auto] flex flex-col gap-2 overflow-hidden bg-green-300 px-4 py-8 md:w-[90%]">
+          <div
+            onClick={() => setIsAddMedModalOpen(true)}
+            className="z-20 cursor-pointer self-start font-bold text-accent hover:text-subtitle"
+          >
+            + Add a new medication
+          </div>
+          <div className=" flex w-full appearance-none flex-col items-center justify-center  text-xl font-semibold">
+            <div class="cloud1 absolute translate-x-[-50%] translate-y-[-50%] animate-cloud1">
+              <img alt="" src="/images/cloud-2a.png" width="250" />
+            </div>
+            <div className="appearance-none text-primaryBlue">{today}</div>
+
+            <div class="cloud2 absolute translate-x-[60%] translate-y-[20%] animate-cloud2">
+              <img alt="" src="/images/cloud-3a.png" width="300" />
+            </div>
+          </div>
+          <div className="schedule mx-[auto] mt-[-8rem] flex appearance-none flex-col gap-2 overflow-hidden px-4  md:w-[90%]">
             {sortedSchedule.map((course, idx) => {
               if (course.med) {
                 return (
@@ -137,27 +152,23 @@ const MedList = () => {
                 );
               } else {
                 return (
-                  <div className="self-start rounded-[1000px] bg-purple-400 px-2.5 py-1 font-[1rem]">
+                  <div
+                    className={`${
+                      sortedSchedule.some((course) => course.taken)
+                        ? ""
+                        : "invisible"
+                    } self-start rounded-[1000px] bg-purple-400 px-2.5 py-1 font-[1rem]`}
+                  >
                     completed:{" "}
                   </div>
                 );
               }
             })}
           </div>
-
-          <div>
-            <button
-              onClick={() => setIsAddMedModalOpen(true)}
-              className="flex items-center justify-center space-x-3 rounded-lg border-2 border-secondary bg-pink-200 px-5 py-3 text-sm font-medium shadow-sm transition-all duration-150 hover:-translate-y-0.5 hover:bg-opacity-30 hover:shadow-lg"
-            >
-              Add a new medication
-            </button>
-          </div>
         </>
       )}
       <AddMedFormModal
         isOpen={isAddMedModalOpen}
-        // submitFn={addEvent} //shorthand for onSubmit={newEvent => addEvent(newEvent)}
         closeFn={() => setIsAddMedModalOpen(false)}
       />
     </>
@@ -192,7 +203,7 @@ function AddMedFormModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
   const [medsDropdown, setMedsDropdown] = useState([]);
   const [selectedMed, setSelectedMed] = useState();
   const [times, setTimes] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isRequesting, setIsRequesting] = useState(false);
   const inputRef = useRef();
   const [pickedTimes, setPickedTimes] = useState(new Array(5).fill(null));
   const mainDispatch = useContext(DispatchContext);
@@ -253,7 +264,7 @@ function AddMedFormModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (inputRef.current === null) return; // more validations needed
-    setIsLoading(true);
+    setIsRequesting(true);
     const slots = pickedTimes.slice(0, times);
 
     const addedCourses = [];
@@ -283,10 +294,7 @@ function AddMedFormModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
         setIsClosing={setIsClosing}
         closeFn={closeFn}
       >
-        {/* <div className="flex flex-col items-start space-y-2 rounded-lg p-4"> */}
-        <div className="text-lg font-medium text-primary">
-          Add a new medication
-        </div>
+        <div className="text-lg font-medium">Add a new medication</div>
         <form className="w-full flex-col items-center" onSubmit={handleSubmit}>
           <div className="flex flex-col items-center justify-start  space-y-2 md:flex-row md:space-x-2 md:space-y-0    ">
             <div className="w-full md:w-[50%]">
@@ -342,11 +350,11 @@ function AddMedFormModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
           </div>
           <div className="flex w-full items-center justify-center">
             <button
-              disabled={isLoading}
+              disabled={isRequesting}
               type="submit"
               className="my-6 rounded-lg border border-orange bg-orange px-4 py-3 text-center text-white duration-200 hover:border-warm hover:bg-warm disabled:bg-blue-300"
             >
-              OK
+              Add
             </button>
           </div>
         </form>

@@ -12,7 +12,8 @@ function HeaderLoggedIn(props) {
   const mainState = useContext(StateContext);
 
   function handleLogout() {
-    if (mainState.loggedin) {
+    if (mainState.loggedIn) {
+      console.log("hit handcleLogout fn");
       mainDispatch({ type: "logout" });
     } else if (mainState.socialUserObj) {
       window.open("http://localhost:8081/auth/logout", "_self");
@@ -29,9 +30,9 @@ function HeaderLoggedIn(props) {
       <div className="">
         <button
           onClick={handleLogout}
-          className="flex items-center justify-center space-x-3 rounded-lg border-2 border-secondary px-5 py-3 text-sm font-medium shadow-sm transition-all duration-150 hover:-translate-y-0.5 hover:bg-opacity-30 hover:shadow-lg"
+          className=" ml-2 flex items-center justify-center space-x-3 whitespace-nowrap rounded-lg border-2 px-2 py-2 text-sm font-medium shadow-sm transition-all duration-150 hover:-translate-y-0.5 hover:bg-opacity-30 hover:shadow-lg"
         >
-          <span>Sign Out</span>
+          <span className="text-white">Sign Out</span>
         </button>
       </div>
     </>

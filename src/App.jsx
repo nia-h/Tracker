@@ -1,25 +1,20 @@
-import React, { useState, useReducer, useEffect } from "react";
-import ReactDOM from "react-dom/client";
+import React, { useEffect } from "react";
 import { useImmerReducer } from "use-immer";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 // import { CSSTransition } from 'react-transition-group';
 import Axios from "axios";
-import "./App.css";
+import { StateContext, DispatchContext } from "./Contexts";
+import { DBProvider } from "./context/dbContext.jsx";
+import { isSameDay } from "date-fns";
+
 import HomeGuest from "./components/Homeguest";
-// import Login from './components/Login';
 import MedList from "./components/MedList.jsx";
 import HeaderWrapper from "./components/HeaderWrapper";
 const dbBaseURL = import.meta.env.VITE_dbBaseURL;
 
-import { StateContext, DispatchContext } from "./Contexts";
-import { DBProvider } from "./context/dbContext.jsx";
-import { isSameDay, parseISO } from "date-fns";
-
 const App = () => {
   const initialState = {
     loggedIn: Boolean(localStorage.getItem("medsTrackerToken")),
-    // flashMessages: [],
-
     token: localStorage.getItem("medsTrackerToken"),
     userId: localStorage.getItem("medsTrackerUserId"),
     today: localStorage.getItem("medsTrackerToday"), // use case for useLocalStorage?
@@ -101,12 +96,7 @@ const App = () => {
           signal: abortSignal,
         });
 
-        console.log("data returned from handleSocialUserLogin==>", data);
-
         dispatch({ type: "socialUser_id", data: data.user._id });
-        //   } catch (e) {
-        //     console.log("error.name==>", e.name);
-        //   }
       } catch (e) {
         console.log("error==>", e);
       }
@@ -115,10 +105,7 @@ const App = () => {
     return () => controller.abort();
   }, [state.socialUserObj]);
 
-  console.log("state.userId==>", state.userId);
-
   useEffect(() => {
-    // will need a sepearate one for gitHub user?
     if (state.loggedIn) {
       localStorage.setItem("medsTrackerToken", state.token);
       localStorage.setItem("medsTrackerUserId", state.userId);
@@ -133,38 +120,31 @@ const App = () => {
   useEffect(() => {
     //midnight date change detecting
     const interval = setInterval(() => {
-      // console.log("state.today==>", state.today);
       const currentDay = new Date();
 
       if (!state.loggedIn || !state.socialUser) return;
 
       if (isSameDay(new Date(state.today), currentDay)) return;
 
-      // if (!isSameDay(new Date(parseInt(state.today)), new Date(currentDay))) {
-      //if (!isSameDay(new Date(state.today), currentDay)) {
-      console.log("diff day detectected");
+      console.log("diff day detected");
       dispatch({ type: "updateToday", data: currentDay.toDateString() });
       localStorage.setItem("medsTrackerToday", currentDay.toDateString());
-      // }
     }, 1000);
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
-    console.log("state.userId==>", state.userId);
-  }, [state.userId]);
+  // useEffect(() => {
+  //   console.log("state.userId==>", state.userId);
+  // }, [state.userId]);
 
   return (
-    // <div className="flex  items-center justify-center bg-cyan-50">
-    <div className="min-h-screen items-center justify-center space-y-10 bg-cyan-50 p-6">
-      {/* <div className="m-3 min-w-[80%] items-center justify-center space-y-10 rounded-3xl bg-white shadow-2xl"> */}
+    <div className="flex min-h-screen flex-col items-center justify-center space-y-10 bg-base p-6">
       <StateContext.Provider value={state}>
         <DispatchContext.Provider value={dispatch}>
           <DBProvider>
             <BrowserRouter>
               <HeaderWrapper />
               <Routes>
-                {/* <Route path='/profile/:username/*' element={<Profile />} />  */}
                 <Route
                   path="/"
                   element={

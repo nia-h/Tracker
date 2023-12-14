@@ -12,37 +12,6 @@
 .read-the-docs {
   color: #888;
 } */
-::-webkit-input-placeholder {
-  /* Chrome/Opera/Safari */
-  white-space: pre-line;
-  position: relative;
-  top: -7px;
-}
-
-::-webkit-input-placeholder {
-  /* Chrome/Opera/Safari */
-  white-space: pre-line;
-  position: relative;
-  top: -7px;
-}
-::-moz-placeholder {
-  /* Firefox 19+ */
-  white-space: pre-line;
-  position: relative;
-  top: -7px;
-}
-:-ms-input-placeholder {
-  /* IE 10+ */
-  white-space: pre-line;
-  position: relative;
-  top: -7px;
-}
-:-moz-placeholder {
-  /* Firefox 18- */
-  white-space: pre-line;
-  position: relative;
-  top: -7px;
-}
 
 /* ::-webkit-select:option { */
 /* Chrome/Opera/Safari */

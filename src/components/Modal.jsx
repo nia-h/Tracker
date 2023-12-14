@@ -1,8 +1,8 @@
 /* eslint-disable react/prop-types */
-import { ReactNode, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect } from "react";
 import { createPortal } from "react-dom";
 
-export function Modal({ children, isOpen, closeFn, setIsClosing, isClosing }) {
+export function Modal({ children, closeFn, setIsClosing, isClosing }) {
   useEffect(() => {
     function handler(e) {
       if (e.key === "Escape") closeFn();
@@ -27,7 +27,7 @@ export function Modal({ children, isOpen, closeFn, setIsClosing, isClosing }) {
       <div
         className={`${
           !isClosing ? "animate-popIn" : "animate-popOut"
-        } z-10 min-w-[300px] max-w-[95%] rounded-lg bg-white p-[1rem]`}
+        } z-10 min-w-[300px] max-w-[95%] rounded-lg bg-base p-[1rem]`}
       >
         {children}
       </div>

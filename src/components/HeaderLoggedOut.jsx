@@ -14,9 +14,9 @@ const HeaderLoggedOut = () => {
       <button
         onClick={() => setIsLogInModalOpen(true)}
         type="submit"
-        className="rounded-full bg-[var(--accent)] px-6 py-3 font-bold text-white transition-all duration-150  hover:opacity-70 hover:shadow-lg"
+        className="rounded-full bg-[var(--primaryBlue)] px-6 py-3 font-bold text-white transition-all duration-150  hover:opacity-70 hover:shadow-lg"
       >
-        Sign In
+        Sign in
       </button>
       <LogInModal
         isOpen={isLogInModalOpen}
@@ -61,7 +61,7 @@ function LogInModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
 
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
-  const navigate = useNavigate();
+
   const mainDispatch = useContext(DispatchContext);
 
   const github = () => {
@@ -101,54 +101,58 @@ function LogInModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
         setIsClosing={setIsClosing}
         closeFn={closeFn}
       >
-        <div className="sign-in-view flex flex-col content-center items-center">
-          <div className="title">Sign In</div>
-          <form
-            className="flex flex-col items-center justify-center space-y-3 md:mb-8 md:flex-row md:justify-end md:space-x-4 md:space-y-0"
-            onSubmit={handleSubmit}
-          >
-            <div className="">
-              <label htmlFor="email-register" className="">
-                <small>Email</small>
+        <div className="sign-in-view flex flex-col content-center items-center bg-base">
+          <form onSubmit={handleSubmit} class="mb-2 rounded px-8 py-2">
+            <div class="mb-4">
+              <label
+                class="mb-2 block text-sm font-bold text-gray-700"
+                for="email"
+              >
+                Email
               </label>
               <input
-                onChange={(e) => setEmail(e.target.value)}
-                id="email-register"
-                name="email"
-                className=""
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                }}
+                class="mb-3 w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:border-primaryBlue focus:outline-none"
+                id="email"
                 type="text"
-                placeholder="you@example.com"
-                autoComplete="off"
+                placeholder="you@email.com"
               />
             </div>
-            <div className="form-group">
-              <label htmlFor="password-register" className="">
-                <small>Password</small>
+            <div class="mb-6">
+              <label
+                class="mb-2 block text-sm font-bold text-gray-700"
+                for="password"
+              >
+                Password
               </label>
               <input
-                onChange={(e) => setPassword(e.target.value)}
-                id="password-register"
-                name="password"
-                className=""
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                }}
+                class="mb-3 w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:border-primaryBlue focus:outline-none"
+                id="password"
                 type="password"
-                placeholder="Create a password"
+                placeholder="******************"
               />
             </div>
+
             <button
+              class="ml-auto mr-auto block h-[48px] w-[90%] cursor-pointer rounded-[24px] bg-primaryBlue px-2 shadow-social-button-shadow"
               type="submit"
-              className="w-1/4 rounded-lg bg-secondary text-white transition-all  duration-150 hover:border-b-0 hover:border-t-8 hover:bg-primary hover:shadow-lg"
             >
               Sign In
             </button>
           </form>
-          <div className="form-header mx-[auto] flex w-[90%] flex-col content-center items-center">
-            <div className="sign-in-divider">
-              <span>or</span>
+          <div className="mb-4 flex flex-col content-center items-center rounded px-8 ">
+            <div className="sign-in-divider mb-4">
+              <span className="">or</span>
             </div>
             <div className="social-buttons mb-[10px] flex flex-col content-center items-center">
               <div
                 onClick={github}
-                className="github social-button flex h-[48px] w-[100%] cursor-pointer flex-row items-center rounded-[24px] bg-[#fff] px-2 py-[16px] shadow-social-button-shadow"
+                className="github social-button flex h-[48px] cursor-pointer flex-row items-center rounded-[24px] bg-white px-2 py-2 shadow-social-button-shadow"
               >
                 <div className="github-image">
                   <img
@@ -156,7 +160,7 @@ function LogInModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
                     src="/images/github-mark.svg"
                   />
                 </div>
-                <span className="social-button-text github-button-text flex h-[40px] items-center text-[14px] font-[500] text-[rgba(0,0,0,.54)]">
+                <span className="social-button-text github-button-text flex h-[40px] items-center text-sm font-[500] text-[rgba(0,0,0,.54)]">
                   Sign in with github
                 </span>
               </div>
