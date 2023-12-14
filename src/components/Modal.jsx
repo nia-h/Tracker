@@ -16,7 +16,7 @@ export function Modal({ children, closeFn, setIsClosing, isClosing }) {
   }, [closeFn]);
 
   return createPortal(
-    <div className="fixed bottom-0 left-0 right-0 top-0  flex items-center justify-center">
+    <div className="fixed bottom-0 left-0 right-0 top-0 z-20  flex items-center justify-center">
       <div
         onAnimationEnd={() => setIsClosing(false)}
         className={`overlay ${
