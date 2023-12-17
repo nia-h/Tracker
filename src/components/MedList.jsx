@@ -34,7 +34,7 @@ const MedList = () => {
   const userId = mainState.userId;
   const socialId = mainState.socialId;
   const [isAddMedModalOpen, setIsAddMedModalOpen] = useState(false);
-  const { checkItem } = useDB();
+  const { checkOrDeleteCourse } = useDB();
 
   const sortedSchedule = useMemo(() => {
     const scheduleCopy = [...schedule];
@@ -81,7 +81,17 @@ const MedList = () => {
 
     mainDispatch({ type: "updateSchedule", data: nextSchedule });
 
-    await checkItem(nextSchedule);
+    await checkOrDeleteCourse(nextSchedule);
+  }
+
+  async function handleDelete(e) {
+    const id = e.target.id;
+
+    const nextSchedule = schedule.filter((med) => med._id !== id);
+
+    mainDispatch({ type: "updateSchedule", data: nextSchedule });
+
+    await checkOrDeleteCourse(nextSchedule);
   }
 
   useEffect(() => {
@@ -128,12 +138,12 @@ const MedList = () => {
             + Add a new medication
           </div>
           <div className=" flex w-full appearance-none flex-col items-center justify-center  text-xl font-semibold">
-            <div class="cloud1 absolute translate-x-[-50%] translate-y-[-50%] animate-cloud1">
+            <div className="cloud1 absolute translate-x-[-50%] translate-y-[-50%] animate-cloud1">
               <img alt="" src="/images/cloud-2a.png" width="250" />
             </div>
             <div className="appearance-none text-primaryBlue">{today}</div>
 
-            <div class="cloud2 absolute translate-x-[60%] translate-y-[20%] animate-cloud2">
+            <div className="cloud2 absolute translate-x-[60%] translate-y-[20%] animate-cloud2">
               <img alt="" src="/images/cloud-3a.png" width="300" />
             </div>
           </div>
@@ -144,6 +154,7 @@ const MedList = () => {
                   <Med
                     course={course} // needs refactor to simplify props
                     handleCheck={handleCheck}
+                    handleDelete={handleDelete}
                     key={course._id}
                     taken={course.taken}
                     id={course._id}

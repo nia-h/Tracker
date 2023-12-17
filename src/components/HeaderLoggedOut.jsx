@@ -102,10 +102,10 @@ function LogInModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
         closeFn={closeFn}
       >
         <div className="sign-in-view flex flex-col content-center items-center bg-base">
-          <form onSubmit={handleSubmit} class="mb-2 rounded px-8 py-2">
-            <div class="mb-4">
+          <form onSubmit={handleSubmit} className="mb-2 rounded px-8 py-2">
+            <div className="mb-4">
               <label
-                class="mb-2 block text-sm font-bold text-gray-700"
+                className="mb-2 block text-sm font-bold text-gray-700"
                 for="email"
               >
                 Email
@@ -114,15 +114,15 @@ function LogInModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
                 onChange={(e) => {
                   setEmail(e.target.value);
                 }}
-                class="mb-3 w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:border-primaryBlue focus:outline-none"
+                className="mb-3 w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:border-primaryBlue focus:outline-none"
                 id="email"
                 type="text"
                 placeholder="you@email.com"
               />
             </div>
-            <div class="mb-6">
+            <div className="mb-6">
               <label
-                class="mb-2 block text-sm font-bold text-gray-700"
+                className="mb-2 block text-sm font-bold text-gray-700"
                 for="password"
               >
                 Password
@@ -131,7 +131,7 @@ function LogInModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
                 onChange={(e) => {
                   setPassword(e.target.value);
                 }}
-                class="mb-3 w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:border-primaryBlue focus:outline-none"
+                className="mb-3 w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:border-primaryBlue focus:outline-none"
                 id="password"
                 type="password"
                 placeholder="******************"
@@ -139,7 +139,7 @@ function LogInModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
             </div>
 
             <button
-              class="ml-auto mr-auto block h-[48px] w-[90%] cursor-pointer rounded-[24px] bg-primaryBlue px-2 shadow-social-button-shadow"
+              className="ml-auto mr-auto block h-[48px] w-[90%] cursor-pointer rounded-[24px] bg-primaryBlue px-2 shadow-social-button-shadow"
               type="submit"
             >
               Sign In

@@ -27,9 +27,9 @@ export function DBProvider({ children }) {
     }
   }
 
-  async function checkItem(nextSchedule) {
+  async function checkOrDeleteCourse(nextSchedule) {
     try {
-      const url = dbBaseURL + "/checkItem";
+      const url = dbBaseURL + "/checkOrDeleteCourse";
       const { data } = await Axios.post(url, {
         userId: mainState.userId,
         nextSchedule,
@@ -41,7 +41,7 @@ export function DBProvider({ children }) {
   }
 
   return (
-    <dbContext.Provider value={{ checkItem, updateSchedule }}>
+    <dbContext.Provider value={{ checkOrDeleteCourse, updateSchedule }}>
       {children}
     </dbContext.Provider>
   );
