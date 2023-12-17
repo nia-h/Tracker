@@ -277,6 +277,7 @@ function AddMedFormModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
 
     try {
       const data = await updateSchedule(userId, addedCourses);
+      setIsRequesting(false);
       mainDispatch({
         type: "updateSchedule",
         data,
