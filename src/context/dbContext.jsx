@@ -31,7 +31,7 @@ export function DBProvider({ children }) {
     try {
       const url = dbBaseURL + "/checkOrDeleteCourse";
       const { data } = await Axios.post(url, {
-        userId: mainState.userId,
+        token: mainState.token,
         nextSchedule,
       });
       return data;

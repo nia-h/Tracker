@@ -9,6 +9,7 @@ import { Modal } from "./Modal.jsx";
 
 const HeaderLoggedOut = () => {
   const [isLogInModalOpen, setIsLogInModalOpen] = useState(false);
+
   return (
     <>
       <button
@@ -58,6 +59,8 @@ function LogInModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
   const inputRef = useRef();
 
   const mainState = useContext(StateContext);
+
+  const navigate = useNavigate();
 
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();

@@ -108,7 +108,7 @@ const App = () => {
   useEffect(() => {
     if (state.loggedIn) {
       localStorage.setItem("medsTrackerToken", state.token);
-      localStorage.setItem("medsTrackerUserId", state.userId);
+      localStorage.setItem("medsTrackerUserId", state.userId); //should not save UserId to brower
       localStorage.setItem("medsTrackerToday", state.today);
     } else {
       localStorage.removeItem("medsTrackerToken");
