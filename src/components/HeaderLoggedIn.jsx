@@ -15,7 +15,7 @@ function HeaderLoggedIn(props) {
     if (mainState.loggedIn) {
       console.log("hit handcleLogout fn");
       mainDispatch({ type: "logout" });
-    } else if (mainState.socialUserObj) {
+    } else if (mainState.socialUsername) {
       window.open("http://localhost:8081/auth/logout", "_self");
     }
   }

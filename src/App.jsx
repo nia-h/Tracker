@@ -19,8 +19,9 @@ const App = () => {
     userId: localStorage.getItem("medsTrackerUserId"),
     today: localStorage.getItem("medsTrackerToday"), // use case for useLocalStorage?
     schedule: [],
-    socialUserObj: null,
-    socialId: null,
+    socialUsername: null,
+    // socialUsername: null,
+    // socialId: null,
   };
 
   const mainReducer = (draft, action) => {
@@ -40,14 +41,14 @@ const App = () => {
       case "updateToday":
         draft.today = action.data;
         return;
-      case "socialUser":
-        draft.socialUserObj = action.data;
+      case "socialUsername":
+        draft.socialUsername = action.data;
         draft.today = new Date().toDateString();
-        draft.socialId = action.data.username + action.data.id;
+
         return;
-      case "socialUser_id":
-        draft.userId = action.data;
-        return;
+      // case "socialUser_id":
+      //   draft.userId = action.data;
+      //   return;
     }
   };
 
@@ -56,54 +57,49 @@ const App = () => {
   useEffect(() => {
     const controller = new AbortController();
     const signal = controller.signal;
-    const getUser = () => {
-      fetch(
-        "http://localhost:8081/auth/login/success",
-        {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Credentials": true,
-          },
-        },
-        { signal },
-      )
-        .then((response) => {
-          if (response.status === 200) return response.json();
-          throw new Error("authentication has been failed!");
-        })
-        .then((resObject) => {
-          // setUser(resObject.user);
-          dispatch({ type: "socialUser", data: resObject.user });
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    };
-    if (!state.socialUserObj) getUser();
-    return () => controller.abort();
-  }, []);
 
-  useEffect(() => {
-    const controller = new AbortController();
-    const abortSignal = controller.signal;
-    const handleSocialUserLogin = async () => {
+    const fetchSocialUser = async () => {
+      console.log("fetchSocialUser fired");
       try {
-        const url = dbBaseURL + `/${state.socialId}/socialUserLogin`;
-        const { data } = await Axios.get(url, {
-          signal: abortSignal,
-        });
+        const url = dbBaseURL + `/auth/login/success`;
+        const { data } = await Axios.get(
+          url,
+          { withCredentials: true },
+          {
+            signal,
+          },
+        );
 
-        dispatch({ type: "socialUser_id", data: data.user._id });
+        console.log("data==>", data);
+
+        dispatch({ type: "socialUsername", data: data.user.username });
       } catch (e) {
         console.log("error==>", e);
       }
     };
-    if (state.socialUserObj) handleSocialUserLogin();
+
+    if (!state.socialUsername) fetchSocialUser();
     return () => controller.abort();
-  }, [state.socialUserObj]);
+  }, []);
+
+  // useEffect(() => {
+  //   const controller = new AbortController();
+  //   const abortSignal = controller.signal;
+  //   const handleSocialUserLogin = async () => {
+  //     try {
+  //       const url = dbBaseURL + `/socialUserLogin`;
+  //       const { data } = await Axios.get(url, {
+  //         signal: abortSignal,
+  //       });
+
+  //       dispatch({ type: "socialUser_id", data: data.user._id });
+  //     } catch (e) {
+  //       console.log("error==>", e);
+  //     }
+  //   };
+  //   if (state.socialUsername) handleSocialUserLogin();
+  //   return () => controller.abort();
+  // }, [state.socialUsername]);
 
   useEffect(() => {
     if (state.loggedIn) {
@@ -134,8 +130,8 @@ const App = () => {
   }, []);
 
   // useEffect(() => {
-  //   console.log("state.userId==>", state.userId);
-  // }, [state.userId]);
+  //   console.log("state.socialUsername==>", state.socialUsername);
+  // }, [state.socialUsername]);
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center space-y-10 bg-base p-6">
@@ -148,7 +144,7 @@ const App = () => {
                 <Route
                   path="/"
                   element={
-                    state.loggedIn || state.socialUserObj ? (
+                    state.loggedIn || state.socialUsername ? (
                       <MedList />
                     ) : (
                       <HomeGuest />

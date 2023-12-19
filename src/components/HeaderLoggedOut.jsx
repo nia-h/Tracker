@@ -68,7 +68,7 @@ function LogInModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
   const mainDispatch = useContext(DispatchContext);
 
   const github = () => {
-    window.open(`${dbBaseURL}/auth/github`, "_self");
+    window.open(`${dbBaseURL}/auth/github`, "_self"); //needs to change to window.location.href
   };
 
   const handleSubmit = async (e) => {

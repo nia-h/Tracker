@@ -16,7 +16,7 @@ function HeaderWrapper(props) {
         </div>
         {/* 
         <!-- Right Buttons Menu --> */}
-        {mainState.loggedIn || mainState.socialUserObj ? (
+        {mainState.loggedIn || mainState.socialUsername ? (
           <HeaderLoggedIn />
         ) : (
           <HeaderLoggedOut />

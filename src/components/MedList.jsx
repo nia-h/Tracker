@@ -32,7 +32,6 @@ const MedList = () => {
 
   const today = mainState.today;
   const userId = mainState.userId;
-  const socialId = mainState.socialId;
   const [isAddMedModalOpen, setIsAddMedModalOpen] = useState(false);
   const { checkOrDeleteCourse } = useDB();
 
@@ -95,15 +94,20 @@ const MedList = () => {
   }
 
   useEffect(() => {
+    //needs to refactor to not use userId...instead, use token and cookie session respectiely for two kinds of users
     const controller = new AbortController();
     const abortSignal = controller.signal;
 
     const fetchSchedule = async () => {
       try {
-        const url = dbBaseURL + `/${userId}/fetchSchedule`;
-        const { data } = await Axios.get(url, {
-          signal: abortSignal,
-        });
+        const url = dbBaseURL + `/fetchSchedule`;
+        const { data } = await Axios.get(
+          url,
+          { withCredentials: true },
+          {
+            signal: abortSignal,
+          },
+        );
         mainDispatch({ type: "updateSchedule", data });
         setIsLoading(false);
       } catch (e) {
@@ -111,10 +115,10 @@ const MedList = () => {
       }
     };
 
-    if (mainState.userId) fetchSchedule();
+    fetchSchedule(); //needs to modifty this to account for general users
 
     return () => controller.abort();
-  }, [mainState.userId]);
+  }, []);
 
   if (isLoading) return <LoadingDots />;
 
