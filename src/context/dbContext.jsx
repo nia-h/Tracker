@@ -14,12 +14,16 @@ export function DBProvider({ children }) {
   const today = mainState.today;
   const userId = mainState.userId;
 
-  async function updateSchedule(userId, addedCourses) {
+  async function updateSchedule(addedCourses) {
     console.log("hit updateSchedule context call");
-    console.log("userId from context call=====>", userId);
+
     try {
       const url = dbBaseURL + "/updateSchedule";
-      const { data } = await Axios.post(url, { userId, addedCourses });
+      const { data } = await Axios.post(
+        url,
+        { addedCourses },
+        { withCredentials: true },
+      );
       console.log("data returned from backend==>", data);
       return data;
     } catch (e) {
@@ -30,10 +34,14 @@ export function DBProvider({ children }) {
   async function checkOrDeleteCourse(nextSchedule) {
     try {
       const url = dbBaseURL + "/checkOrDeleteCourse";
-      const { data } = await Axios.post(url, {
-        token: mainState.token,
-        nextSchedule,
-      });
+      const { data } = await Axios.post(
+        url,
+        {
+          token: mainState.token,
+          nextSchedule,
+        },
+        { withCredentials: true },
+      );
       return data;
     } catch (e) {
       console.log(e);

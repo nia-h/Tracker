@@ -225,7 +225,6 @@ function AddMedFormModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
   const mainState = useContext(StateContext);
   // const schedule = mainState.schedule;
   const today = mainState.today;
-  const userId = mainState.userId;
 
   const { updateSchedule } = useDB();
 
@@ -291,7 +290,7 @@ function AddMedFormModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
     closeFn();
 
     try {
-      const data = await updateSchedule(userId, addedCourses);
+      const data = await updateSchedule(addedCourses);
       setIsRequesting(false);
       mainDispatch({
         type: "updateSchedule",
