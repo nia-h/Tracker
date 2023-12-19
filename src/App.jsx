@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useImmerReducer } from "use-immer";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 // import { CSSTransition } from 'react-transition-group';
@@ -10,6 +10,7 @@ import { isSameDay } from "date-fns";
 import HomeGuest from "./components/Homeguest";
 import MedList from "./components/MedList.jsx";
 import HeaderWrapper from "./components/HeaderWrapper";
+import LoadingDots from "./components/LoadingDots.jsx";
 const dbBaseURL = import.meta.env.VITE_dbBaseURL;
 
 const App = () => {
@@ -53,6 +54,7 @@ const App = () => {
   };
 
   const [state, dispatch] = useImmerReducer(mainReducer, initialState);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -69,10 +71,8 @@ const App = () => {
             signal,
           },
         );
-
-        console.log("data==>", data);
-
         dispatch({ type: "socialUsername", data: data.user.username });
+        setIsLoading(false);
       } catch (e) {
         console.log("error==>", e);
       }
@@ -80,7 +80,7 @@ const App = () => {
 
     if (!state.socialUsername) fetchSocialUser();
     return () => controller.abort();
-  }, []);
+  }, [state.socialUsername]);
 
   // useEffect(() => {
   //   const controller = new AbortController();
@@ -129,10 +129,6 @@ const App = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // useEffect(() => {
-  //   console.log("state.socialUsername==>", state.socialUsername);
-  // }, [state.socialUsername]);
-
   return (
     <div className="flex min-h-screen flex-col items-center space-y-10 bg-base p-6">
       <StateContext.Provider value={state}>
@@ -147,7 +143,7 @@ const App = () => {
                     state.loggedIn || state.socialUsername ? (
                       <MedList />
                     ) : (
-                      <HomeGuest />
+                      <HomeGuest isLoading={isLoading} />
                     )
                   }
                 />

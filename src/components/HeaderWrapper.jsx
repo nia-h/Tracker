@@ -8,7 +8,7 @@ function HeaderWrapper(props) {
 
   return (
     <>
-      <div className="flex w-full justify-between">
+      <div className="flex h-[3rem] w-full justify-between">
         {/* <!-- Flex Container For Logo/Menu --> */}
         <div className="flex items-center">
           {/* <!-- Logo --> */}

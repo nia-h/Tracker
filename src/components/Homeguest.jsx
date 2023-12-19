@@ -2,10 +2,11 @@ import React, { useState, useRef, useLayoutEffect } from "react";
 import Axios from "axios";
 const dbBaseURL = import.meta.env.VITE_dbBaseURL;
 import { Modal } from "./Modal";
+import LoadingDots from "./LoadingDots.jsx";
 
-function HomeGuest() {
+function HomeGuest({ isLoading }) {
   const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
-
+  if (isLoading) return <LoadingDots />;
   return (
     <>
       <section className="mx-auto" id="hero">
