@@ -134,7 +134,7 @@ const App = () => {
   // }, [state.socialUsername]);
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center space-y-10 bg-base p-6">
+    <div className="flex min-h-screen flex-col items-center space-y-10 bg-base p-6">
       <StateContext.Provider value={state}>
         <DispatchContext.Provider value={dispatch}>
           <DBProvider>
