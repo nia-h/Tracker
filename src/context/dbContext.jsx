@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import { StateContext, DispatchContext } from "../Contexts";
+import { StateContext } from "../Contexts";
 import Axios from "axios";
 
 const dbBaseURL = import.meta.env.VITE_dbBaseURL;
@@ -7,16 +7,9 @@ const dbBaseURL = import.meta.env.VITE_dbBaseURL;
 export const dbContext = createContext();
 
 export function DBProvider({ children }) {
-  //   const [events, setEvents] = useLocalStorage("EVENTS", [])
-  // const mainDispatch = useContext(DispatchContext);
   const mainState = useContext(StateContext);
-  const schedule = mainState.schedule;
-  const today = mainState.today;
-  const userId = mainState.userId;
 
   async function updateSchedule(addedCourses) {
-    console.log("hit updateSchedule context call");
-
     try {
       const url = dbBaseURL + "/updateSchedule";
       const { data } = await Axios.post(
@@ -24,7 +17,6 @@ export function DBProvider({ children }) {
         { token: mainState.token, addedCourses },
         { withCredentials: true },
       );
-      console.log("data returned from backend==>", data);
       return data;
     } catch (e) {
       console.log(e);

@@ -21,8 +21,6 @@ const App = () => {
     today: localStorage.getItem("medsTrackerToday"), // use case for useLocalStorage?
     schedule: [],
     socialUsername: null,
-    // socialUsername: null,
-    // socialId: null,
   };
 
   const mainReducer = (draft, action) => {
@@ -49,9 +47,6 @@ const App = () => {
       case "socialLogout":
         draft.socialUsername = null;
         return;
-      // case "socialUser_id":
-      //   draft.userId = action.data;
-      //   return;
     }
   };
 
@@ -85,29 +80,9 @@ const App = () => {
     };
 
     if (!state.socialUsername) fetchSocialUser();
-    // fetchSocialUser();
 
     return () => controller.abort();
   }, []);
-
-  // useEffect(() => {
-  //   const controller = new AbortController();
-  //   const abortSignal = controller.signal;
-  //   const handleSocialUserLogin = async () => {
-  //     try {
-  //       const url = dbBaseURL + `/socialUserLogin`;
-  //       const { data } = await Axios.get(url, {
-  //         signal: abortSignal,
-  //       });
-
-  //       dispatch({ type: "socialUser_id", data: data.user._id });
-  //     } catch (e) {
-  //       console.log("error==>", e);
-  //     }
-  //   };
-  //   if (state.socialUsername) handleSocialUserLogin();
-  //   return () => controller.abort();
-  // }, [state.socialUsername]);
 
   useEffect(() => {
     if (state.loggedIn) {
@@ -137,9 +112,7 @@ const App = () => {
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
-    console.log("state.socialUsername===>", state.socialUsername);
-  }, [state.socialUsername]);
+  useEffect(() => {}, [state.socialUsername]);
 
   return (
     <div className="flex min-h-screen flex-col items-center space-y-10 bg-base p-6">
@@ -169,7 +142,6 @@ const App = () => {
         </DispatchContext.Provider>
       </StateContext.Provider>
     </div>
-    // </div>
   );
 };
 

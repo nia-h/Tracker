@@ -3,15 +3,13 @@ import { Link } from "react-router-dom";
 // import ReactTooltip from 'react-tooltip';
 
 import { DispatchContext, StateContext } from "../Contexts";
-// import CreateEntry from './CreateEntry';
 
-function HeaderLoggedIn(props) {
+function HeaderLoggedIn() {
   const mainDispatch = useContext(DispatchContext);
   const mainState = useContext(StateContext);
 
   function handleLogout() {
     if (mainState.loggedIn) {
-      console.log("hit handcleLogout fn");
       mainDispatch({ type: "logout" });
     } else if (mainState.socialUsername) {
       mainDispatch({ type: "socialLogout" });
@@ -19,11 +17,6 @@ function HeaderLoggedIn(props) {
       window.open("http://localhost:8081/auth/logout", "_self");
     }
   }
-
-  // function handleSearchIcon(e) {
-  //   e.preventDefault();
-  //   mainDispatch({ type: 'openSearch' });
-  // }
 
   return (
     <>

@@ -116,13 +116,11 @@ const MedList = () => {
         console.log("e.response==>", e.response);
         if (e.response.status === 400) {
           console.log("entered navigate block");
-          // setIsLoading(false);
-          // navigate("/");
         }
       }
     };
 
-    fetchSchedule(); //needs to modifty this to account for general users
+    fetchSchedule();
 
     return () => controller.abort();
   }, []);

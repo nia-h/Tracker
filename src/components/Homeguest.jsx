@@ -2,7 +2,6 @@ import React, { useState, useRef, useLayoutEffect } from "react";
 import Axios from "axios";
 const dbBaseURL = import.meta.env.VITE_dbBaseURL;
 import { Modal } from "./Modal";
-import LoadingDots from "./LoadingDots.jsx";
 
 function HomeGuest() {
   const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
@@ -104,12 +103,6 @@ function SignInModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
       console.log("err==>", e);
     }
   }
-
-  // const [isRequesting, setIsRequesting] = useState(false);
-  // const inputRef = useRef();
-
-  // const mainDispatch = useContext(DispatchContext);
-  // const mainState = useContext(StateContext);
 
   return (
     (isOpen || isClosing) && (
