@@ -4,9 +4,9 @@ const dbBaseURL = import.meta.env.VITE_dbBaseURL;
 import { Modal } from "./Modal";
 import LoadingDots from "./LoadingDots.jsx";
 
-function HomeGuest({ isLoading }) {
+function HomeGuest() {
   const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
-  if (isLoading) return <LoadingDots />;
+
   return (
     <>
       <section className="mx-auto" id="hero">

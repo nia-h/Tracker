@@ -54,7 +54,7 @@ const App = () => {
   };
 
   const [state, dispatch] = useImmerReducer(mainReducer, initialState);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -63,6 +63,7 @@ const App = () => {
     const fetchSocialUser = async () => {
       console.log("fetchSocialUser fired");
       try {
+        setIsLoading(true);
         const url = dbBaseURL + `/auth/login/success`;
         const { data } = await Axios.get(
           url,
@@ -71,7 +72,9 @@ const App = () => {
             signal,
           },
         );
-        dispatch({ type: "socialUsername", data: data.user.username });
+
+        if (data.user)
+          dispatch({ type: "socialUsername", data: data.user.username });
         setIsLoading(false);
       } catch (e) {
         console.log("error==>", e);
@@ -79,8 +82,10 @@ const App = () => {
     };
 
     if (!state.socialUsername) fetchSocialUser();
+    // fetchSocialUser();
+
     return () => controller.abort();
-  }, [state.socialUsername]);
+  }, []);
 
   // useEffect(() => {
   //   const controller = new AbortController();
@@ -129,6 +134,10 @@ const App = () => {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    console.log("isLoading===>", isLoading);
+  }, [isLoading]);
+
   return (
     <div className="flex min-h-screen flex-col items-center space-y-10 bg-base p-6">
       <StateContext.Provider value={state}>
@@ -136,18 +145,22 @@ const App = () => {
           <DBProvider>
             <BrowserRouter>
               <HeaderWrapper />
-              <Routes>
-                <Route
-                  path="/"
-                  element={
-                    state.loggedIn || state.socialUsername ? (
-                      <MedList />
-                    ) : (
-                      <HomeGuest isLoading={isLoading} />
-                    )
-                  }
-                />
-              </Routes>
+              {isLoading ? (
+                <LoadingDots />
+              ) : (
+                <Routes>
+                  <Route
+                    path="/"
+                    element={
+                      state.loggedIn || state.socialUsername ? (
+                        <MedList />
+                      ) : (
+                        <HomeGuest />
+                      )
+                    }
+                  />
+                </Routes>
+              )}
             </BrowserRouter>
           </DBProvider>
         </DispatchContext.Provider>
