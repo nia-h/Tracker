@@ -13,8 +13,7 @@ function HeaderLoggedIn() {
       mainDispatch({ type: "logout" });
     } else if (mainState.socialUsername) {
       mainDispatch({ type: "socialLogout" });
-
-      window.open("http://localhost:8081/auth/logout", "_self");
+      (window.location.href = "http://localhost:8081/auth/logout"), "_self";
     }
   }
 
