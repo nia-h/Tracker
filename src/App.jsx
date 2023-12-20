@@ -42,10 +42,12 @@ const App = () => {
       case "updateToday":
         draft.today = action.data;
         return;
-      case "socialUsername":
+      case "socialLogin":
         draft.socialUsername = action.data;
         draft.today = new Date().toDateString();
-
+        return;
+      case "socialLogout":
+        draft.socialUsername = null;
         return;
       // case "socialUser_id":
       //   draft.userId = action.data;
@@ -73,8 +75,9 @@ const App = () => {
           },
         );
 
-        if (data.user)
-          dispatch({ type: "socialUsername", data: data.user.username });
+        if (data.user) {
+          dispatch({ type: "socialLogin", data: data.user.username });
+        }
         setIsLoading(false);
       } catch (e) {
         console.log("error==>", e);
@@ -135,8 +138,8 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    console.log("isLoading===>", isLoading);
-  }, [isLoading]);
+    console.log("state.socialUsername===>", state.socialUsername);
+  }, [state.socialUsername]);
 
   return (
     <div className="flex min-h-screen flex-col items-center space-y-10 bg-base p-6">

@@ -10,7 +10,6 @@ import React, {
 import Axios from "axios";
 
 import { StateContext, DispatchContext } from "../Contexts";
-// import LoadingDotsIcon from './LoadingDotsIcon';
 
 import Med from "./Med.jsx";
 import _ from "lodash";
@@ -31,7 +30,6 @@ const MedList = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   const today = mainState.today;
-  const userId = mainState.userId;
   const [isAddMedModalOpen, setIsAddMedModalOpen] = useState(false);
   const { checkOrDeleteCourse } = useDB();
 
@@ -101,9 +99,13 @@ const MedList = () => {
     const fetchSchedule = async () => {
       try {
         const url = dbBaseURL + `/fetchSchedule`;
-        const { data } = await Axios.get(
+        const { data } = await Axios.post(
           url,
-          { withCredentials: true },
+
+          { token: mainState.token },
+          {
+            withCredentials: true,
+          },
           {
             signal: abortSignal,
           },
@@ -111,7 +113,12 @@ const MedList = () => {
         mainDispatch({ type: "updateSchedule", data });
         setIsLoading(false);
       } catch (e) {
-        console.log("error==>", e);
+        console.log("e.response==>", e.response);
+        if (e.response.status === 400) {
+          console.log("entered navigate block");
+          // setIsLoading(false);
+          // navigate("/");
+        }
       }
     };
 

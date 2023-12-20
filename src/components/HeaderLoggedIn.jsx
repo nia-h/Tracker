@@ -1,9 +1,7 @@
 import React, { useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 // import ReactTooltip from 'react-tooltip';
-const dbBaseURL = import.meta.env.VITE_dbBaseURL;
-const medsBaseURL = import.meta.env.VITE_medsBaseURL;
-import { useNavigate } from "react-router-dom";
+
 import { DispatchContext, StateContext } from "../Contexts";
 // import CreateEntry from './CreateEntry';
 
@@ -16,6 +14,8 @@ function HeaderLoggedIn(props) {
       console.log("hit handcleLogout fn");
       mainDispatch({ type: "logout" });
     } else if (mainState.socialUsername) {
+      mainDispatch({ type: "socialLogout" });
+
       window.open("http://localhost:8081/auth/logout", "_self");
     }
   }

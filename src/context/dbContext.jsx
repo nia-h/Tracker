@@ -21,7 +21,7 @@ export function DBProvider({ children }) {
       const url = dbBaseURL + "/updateSchedule";
       const { data } = await Axios.post(
         url,
-        { addedCourses },
+        { token: mainState.token, addedCourses },
         { withCredentials: true },
       );
       console.log("data returned from backend==>", data);
