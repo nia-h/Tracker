@@ -10,16 +10,23 @@ export function DBProvider({ children }) {
   const mainState = useContext(StateContext);
 
   async function updateSchedule(addedCourses) {
+    let response;
     try {
       const url = dbBaseURL + "/updateSchedule";
-      const { data } = await Axios.post(
+      response = await Axios.post(
         url,
         { token: mainState.token, addedCourses },
+        // { token: undefined, addedCourses },//testing in progress
+        // { token: mainState.token, addedCourses: undefined }, //testing in progress
+
         { withCredentials: true },
       );
-      return data;
+
+      return response.data;
     } catch (e) {
-      console.log(e);
+      console.log("error in catch block==>", e.response.data);
+    } finally {
+      console.log("response==>", response);
     }
   }
 

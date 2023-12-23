@@ -7,6 +7,7 @@ export default {
         "social-button-shadow":
           "0 0 2px 0 rgba(0, 0, 0, 0.12),0 2px 2px 0 rgba(0, 0, 0, 0.24), 0 0 0 0 rgba(0, 0, 0, 0.12), 0 0 0 0 rgba(0, 0, 0, 0.24)",
       },
+
       colors: {
         base: "hsl(0, 0%, 95%)",
         subtitle: "hsl(218, 4%, 50%)",

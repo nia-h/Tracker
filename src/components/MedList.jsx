@@ -12,16 +12,18 @@ import Axios from "axios";
 import { StateContext, DispatchContext } from "../Contexts";
 
 import Med from "./Med.jsx";
+import TimePicker from "./TimePicker.jsx";
 import _ from "lodash";
 import { Modal } from "./Modal.jsx";
 import debounce from "lodash/debounce";
 const medsBaseURL = import.meta.env.VITE_medsBaseURL;
 const dbBaseURL = import.meta.env.VITE_dbBaseURL;
+import LoadingDots from "../components/LoadingDots.jsx";
 
 import times from "lodash/fp/times.js";
 const _times = times;
 import { useDB } from "../context/useDB.jsx";
-import LoadingDots from "./LoadingDots.jsx";
+import { all } from "lodash/fp.js";
 
 const MedList = () => {
   const mainDispatch = useContext(DispatchContext);
@@ -221,11 +223,17 @@ function AddMedFormModal({ isOpen, closeFn }) {
 
 function AddMedFormModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
   const [medsDropdown, setMedsDropdown] = useState([]);
-  const [selectedMed, setSelectedMed] = useState();
-  const [times, setTimes] = useState(0);
-  const [isRequesting, setIsRequesting] = useState(false);
-  const inputRef = useRef();
-  const [pickedTimes, setPickedTimes] = useState(new Array(5).fill(null));
+
+  const medRef = useRef();
+  const [selectedMed, setSelectedMed] = useState(); // useMemo?
+  const [medFocus, setMedFocus] = useState(false);
+
+  const [times, setTimes] = useState(0); //useMemo?
+  const [timesFocus, setTimesFocus] = useState(true);
+
+  const [pickedTimes, setPickedTimes] = useState(new Array(5).fill(null)); //useMemo?
+  const [allTimesPicked, setAllTimesPicked] = useState(false);
+
   const mainDispatch = useContext(DispatchContext);
   const mainState = useContext(StateContext);
   // const schedule = mainState.schedule;
@@ -233,24 +241,17 @@ function AddMedFormModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
 
   const { updateSchedule } = useDB();
 
+  // const submitRules = () => {
+  //   return (
+  //     times &&
+  //     pickedTimes.filter((time) => time !== null).length === times &&
+  //     selectedMed
+  //   );
+  // };
+
   const generateTimePicker = (i) => {
     return (
-      <div className="flex flex-col items-start space-y-2">
-        <p
-          className={`text-md font-normal ${
-            i < times ? "text-secondary" : "text-gray-500"
-          }`}
-        >
-          Dose {i + 1}
-        </p>
-        <input
-          id={`timepicker-${i}`}
-          key={`timepicker-${i}`}
-          onBlur={(e) => handleTimePicker(e, i)}
-          type="time"
-          disabled={i >= times}
-        ></input>
-      </div>
+      <TimePicker i={i} times={times} handleTimePicker={handleTimePicker} />
     );
   };
 
@@ -269,6 +270,7 @@ function AddMedFormModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
   };
 
   const handleSelectedMed = (e) => {
+    setMedFocus(false);
     setSelectedMed(e.target.value);
   };
 
@@ -282,8 +284,8 @@ function AddMedFormModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (inputRef.current === null) return; // more validations needed
-    setIsRequesting(true);
+    // if (inputRef.current === null) return; // more validations needed
+
     const slots = pickedTimes.slice(0, times);
 
     const addedCourses = [];
@@ -296,7 +298,11 @@ function AddMedFormModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
 
     try {
       const data = await updateSchedule(addedCourses);
-      setIsRequesting(false);
+      if (!data) {
+        console.log("no data");
+        return;
+      }
+
       mainDispatch({
         type: "updateSchedule",
         data,
@@ -306,6 +312,31 @@ function AddMedFormModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
     }
   };
 
+  useEffect(() => {
+    medRef.current.focus();
+  }, []);
+
+  useEffect(() => {
+    const numberOfPicked = pickedTimes.filter((time) => time !== null).length;
+    if (numberOfPicked == 0) return;
+    numberOfPicked == times
+      ? setAllTimesPicked(true)
+      : setAllTimesPicked(false);
+  }, [pickedTimes, times]);
+
+  console.log("times==>", times);
+  console.log("selectedMed==>", selectedMed);
+  console.log("allTimesPicked==>", allTimesPicked);
+  // console.log(
+  //   "pickedTimes.filter((time) => time !== null).length====>",
+  //   pickedTimes.filter((time) => time !== null).length,
+  // );
+  // console.log(
+  //   "pickedTimes.filter((time) => time !== null).length=== times===>",
+  //   pickedTimes.filter((time) => time !== null).length === +times,
+  // );
+
+  // console.log("times==>", times);
   return (
     (isOpen || isClosing) && (
       <Modal
@@ -316,18 +347,29 @@ function AddMedFormModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
       >
         <div className="text-lg font-medium">Add a new medication</div>
         <form className="w-full flex-col items-center" onSubmit={handleSubmit}>
-          <div className="flex flex-col items-center justify-start  space-y-2 md:flex-row md:space-x-2 md:space-y-0    ">
+          <div className=" flex flex-col items-center justify-start space-y-4 md:mt-6 md:flex-row md:space-x-4 md:space-y-0   ">
             <div className="w-full md:w-[50%]">
+              <div
+                className={`relative ${
+                  selectedMed || medFocus ? "hidden" : ""
+                }`}
+              >
+                <div className="absolute z-0  w-[max-content] -translate-y-[calc(100%+var(--tooltipArrow-size))]  rounded-[.3em] bg-subtitle p-[.5em] text-center text-white ">
+                  Please select a medication
+                </div>
+                <div className="downwardArrow absolute z-10 mx-auto -translate-y-[var(--tooltipArrow-size)] translate-x-[50%] border-[length:var(--tooltipArrow-size)] border-transparent border-t-subtitle"></div>
+              </div>
               <input
                 required
                 type="text"
-                ref={inputRef}
-                className="h-10 w-full rounded-md border border-gray-300 px-3 pb-2 pt-4 text-sm placeholder-gray-400 placeholder:font-sans placeholder:font-light"
+                ref={medRef}
+                className="relative h-10 w-full rounded-md border border-gray-300 px-3 pb-2 pt-4 text-sm placeholder-gray-400 placeholder:font-sans placeholder:font-light"
                 placeholder="name of medication"
                 id="medname"
                 list="medsDropdown"
-                onChange={debounce(handleMedsDropdown, 200)}
+                onChange={debounce(handleMedsDropdown, 100)}
                 onBlur={(e) => handleSelectedMed(e)}
+                onFocus={() => setMedFocus(true)}
               />
               <datalist id="medsDropdown">
                 {medsDropdown.map((med) => (
@@ -339,11 +381,21 @@ function AddMedFormModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
             </div>
 
             <div className="w-full md:w-[50%]">
+              <div
+                className={`relative ${times || timesFocus ? "hidden" : ""}`}
+              >
+                <div className="absolute z-0  w-[max-content] -translate-y-[calc(100%+var(--tooltipArrow-size))]  rounded-[.3em] bg-subtitle p-[.5em] text-center text-white ">
+                  Please select from the list
+                </div>
+                <div className="downwardArrow absolute z-10 mx-auto -translate-y-[var(--tooltipArrow-size)] translate-x-[50%] border-[length:var(--tooltipArrow-size)] border-transparent border-t-subtitle"></div>
+              </div>
               <select
                 id="timesArray"
                 required
                 className="h-10 w-full rounded-md border border-gray-300 p-3 font-sans text-sm font-light invalid:text-gray-400"
                 onChange={(e) => setTimes(e.target.value)}
+                onBlur={() => setMedFocus(false)}
+                onFocus={() => setMedFocus(true)}
               >
                 <option className="" value="" selected disabled>
                   how many times a day do you take this medication?
@@ -370,7 +422,7 @@ function AddMedFormModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
           </div>
           <div className="flex w-full items-center justify-center">
             <button
-              disabled={isRequesting}
+              disabled={!times || !selectedMed || !allTimesPicked || times == 0}
               type="submit"
               className="my-6 rounded-lg border border-orange bg-orange px-4 py-3 text-center text-white duration-200 hover:border-warm hover:bg-warm disabled:bg-blue-300"
             >
