@@ -284,7 +284,6 @@ function AddMedFormModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // if (inputRef.current === null) return; // more validations needed
 
     const slots = pickedTimes.slice(0, times);
 
@@ -297,18 +296,22 @@ function AddMedFormModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
     closeFn();
 
     try {
-      const data = await updateSchedule(addedCourses);
-      if (!data) {
-        console.log("no data");
-        return;
-      }
+      const url = dbBaseURL + "/updateSchedule";
+      const response = await Axios.post(
+        url,
+        // { token: mainState.token, addedCourses },
+        { token: undefined, addedCourses }, //testing in progress
+        // { token: mainState.token, addedCourses: undefined }, //testing in progress
 
-      mainDispatch({
-        type: "updateSchedule",
-        data,
-      });
-    } catch (e) {
-      console.log("err==>", e);
+        { withCredentials: true },
+      );
+      if (response.data)
+        mainDispatch({
+          type: "updateSchedule",
+          data,
+        });
+    } catch (err) {
+      console.log(`${err.code}: ${err.response.data}`);
     }
   };
 
@@ -324,19 +327,6 @@ function AddMedFormModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
       : setAllTimesPicked(false);
   }, [pickedTimes, times]);
 
-  console.log("times==>", times);
-  console.log("selectedMed==>", selectedMed);
-  console.log("allTimesPicked==>", allTimesPicked);
-  // console.log(
-  //   "pickedTimes.filter((time) => time !== null).length====>",
-  //   pickedTimes.filter((time) => time !== null).length,
-  // );
-  // console.log(
-  //   "pickedTimes.filter((time) => time !== null).length=== times===>",
-  //   pickedTimes.filter((time) => time !== null).length === +times,
-  // );
-
-  // console.log("times==>", times);
   return (
     (isOpen || isClosing) && (
       <Modal
