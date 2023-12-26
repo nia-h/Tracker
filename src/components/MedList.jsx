@@ -299,8 +299,8 @@ function AddMedFormModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
       const url = dbBaseURL + "/updateSchedule";
       const response = await Axios.post(
         url,
-        // { token: mainState.token, addedCourses },
-        { token: undefined, addedCourses }, //testing in progress
+        { token: mainState.token, addedCourses },
+        // { token: undefined, addedCourses }, //testing in progress
         // { token: mainState.token, addedCourses: undefined }, //testing in progress
 
         { withCredentials: true },
@@ -308,10 +308,10 @@ function AddMedFormModalInner({ isClosing, setIsClosing, isOpen, closeFn }) {
       if (response.data)
         mainDispatch({
           type: "updateSchedule",
-          data,
+          data: response.data,
         });
     } catch (err) {
-      console.log(`${err.code}: ${err.response.data}`);
+      console.log(err);
     }
   };
 
