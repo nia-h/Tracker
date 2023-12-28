@@ -79,7 +79,8 @@ const App = () => {
       }
     };
 
-    if (!state.socialUsername) fetchSocialUser();
+    // if (!state.socialUsername) fetchSocialUser();
+    fetchSocialUser();
 
     return () => controller.abort();
   }, []);
@@ -112,7 +113,9 @@ const App = () => {
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {}, [state.socialUsername]);
+  useEffect(() => {
+    console.log("OAuth user==>", state.socialUsername);
+  }, [state.socialUsername]);
 
   return (
     <div className="min-w-screen flex min-h-screen flex-col items-center space-y-10 bg-base p-6">

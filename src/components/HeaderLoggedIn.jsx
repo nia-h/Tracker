@@ -1,6 +1,7 @@
 import React, { useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 // import ReactTooltip from 'react-tooltip';
+const dbBaseURL = import.meta.env.VITE_dbBaseURL;
 
 import { DispatchContext, StateContext } from "../Contexts";
 

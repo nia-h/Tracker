@@ -8,6 +8,7 @@ import React, {
   useLayoutEffect,
 } from "react";
 import Axios from "axios";
+import { useDB } from "../context/useDB.jsx";
 
 import { StateContext, DispatchContext } from "../Contexts";
 
@@ -22,8 +23,6 @@ import LoadingDots from "../components/LoadingDots.jsx";
 
 import times from "lodash/fp/times.js";
 const _times = times;
-import { useDB } from "../context/useDB.jsx";
-import { all } from "lodash/fp.js";
 
 const MedList = () => {
   const mainDispatch = useContext(DispatchContext);
@@ -33,6 +32,7 @@ const MedList = () => {
 
   const today = mainState.today;
   const [isAddMedModalOpen, setIsAddMedModalOpen] = useState(false);
+
   const { checkOrDeleteCourse } = useDB();
 
   const sortedSchedule = useMemo(() => {
