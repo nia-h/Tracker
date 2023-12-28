@@ -4,17 +4,19 @@ import { Link } from "react-router-dom";
 const dbBaseURL = import.meta.env.VITE_dbBaseURL;
 
 import { DispatchContext, StateContext } from "../Contexts";
+import Axios from "axios";
 
 function HeaderLoggedIn() {
   const mainDispatch = useContext(DispatchContext);
   const mainState = useContext(StateContext);
 
-  function handleLogout() {
+  async function handleLogout() {
     if (mainState.loggedIn) {
       mainDispatch({ type: "logout" });
     } else if (mainState.socialUsername) {
       mainDispatch({ type: "socialLogout" });
-      window.location.href = dbBaseURL + `/auth/logout`;
+      const handleLogoutResponse = await Axios.get(dbBaseURL + `/auth/logout`);
+      console.log("handleLogoutResponse", handleLogoutResponse);
     }
   }
 
