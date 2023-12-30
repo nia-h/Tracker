@@ -99,6 +99,7 @@ const MedList = () => {
     const abortSignal = controller.signal;
 
     const fetchSchedule = async () => {
+      //need to refactor to allow response data shape
       try {
         const url = dbBaseURL + `/fetchSchedule`;
         const { data } = await Axios.post(
@@ -112,6 +113,7 @@ const MedList = () => {
             signal: abortSignal,
           },
         );
+
         mainDispatch({ type: "updateSchedule", data });
         setIsLoading(false);
       } catch (e) {

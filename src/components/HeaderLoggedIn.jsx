@@ -15,8 +15,23 @@ function HeaderLoggedIn() {
       mainDispatch({ type: "logout" });
     } else if (mainState.socialUsername) {
       mainDispatch({ type: "socialLogout" });
-      const handleLogoutResponse = await Axios.get(dbBaseURL + `/auth/logout`);
-      console.log("handleLogoutResponse", handleLogoutResponse);
+      try {
+        const url = dbBaseURL + `/auth/logout`;
+        const response = await Axios({
+          method: "POST",
+          url,
+          withCredentials: true,
+        });
+
+        // await Axios.get(url, {
+        //   //can out use Axios.post (backend unable to log out user)
+        //   withCredentials: true,
+        // });
+        console.log("response.date==>", response.data);
+        //   // await Axios.post(dbBaseURL + `/auth/logout`);
+      } catch (e) {
+        console.error("error==>", e);
+      }
     }
   }
 
